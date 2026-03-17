@@ -1,51 +1,85 @@
 import streamlit as st
 import requests
 
-# Configurações Iniciais
-st.set_page_config(page_title="FC Porto Digital", page_icon="🔵", layout="wide")
+# Configuração da página para parecer uma App
+st.set_page_config(page_title="Porto App", page_icon="🔵", layout="centered")
+
+# Estilo CSS para parecer uma App de telemóvel
+st.markdown("""
+    <style>
+    .stApp { background-color: #00264d; } /* Azul escuro fundo */
+    [data-testid="stSidebar"] { background-color: #001a33; }
+    .main-card {
+        background-color: white;
+        padding: 15px;
+        border-radius: 15px;
+        margin-bottom: 15px;
+        color: #00264d;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    .team-name { font-weight: bold; font-size: 1.1rem; }
+    .score { font-size: 1.5rem; font-weight: 900; color: #00428c; }
+    </style>
+    """, unsafe_allow_html=True)
+
 API_KEY = "39ef6a8b48ea4d0ea3a5157105ec0ddf"
 PORTO_ID = 503
 headers = {"X-Auth-Token": API_KEY}
 
-# --- MENU LATERAL ---
-st.sidebar.image("https://upload.wikimedia.org/wikipedia/pt/1/1c/FC_Porto.png", width=100)
-st.sidebar.title("Porto App")
-aba = st.sidebar.radio("Ir para:", ["Resultados", "Plantel", "Calendário"])
-
-# --- FUNÇÃO PARA CARREGAR DADOS ---
 def get_data(endpoint):
     url = f"https://api.football-data.org/v4/{endpoint}"
-    return requests.get(url, headers=headers).json()
+    res = requests.get(url, headers=headers)
+    return res.json()
 
-# --- ABA: RESULTADOS ---
+# Menu Lateral
+st.sidebar.title("🔵 FCP Navigation")
+aba = st.sidebar.radio("Menu", ["Resultados", "Plantel", "Calendário"])
+
 if aba == "Resultados":
-    st.header("🔵 Últimos Resultados")
+    st.title("⚽ Resultados")
     dados = get_data(f"teams/{PORTO_ID}/matches?status=FINISHED")
     
-    for jogo in reversed(dados['matches'][-10:]):
-        with st.expander(f"⚽ {jogo['homeTeam']['shortName']} {jogo['score']['fullTime']['home']} - {jogo['score']['fullTime']['away']} {jogo['awayTeam']['shortName']}"):
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                st.image(jogo['homeTeam']['crest'], width=50)
-                st.write(jogo['homeTeam']['name'])
-            with col2:
-                st.headline("VS")
-                st.write(jogo['utcDate'][:10])
-            with col3:
-                st.image(jogo['awayTeam']['crest'], width=50)
-                st.write(jogo['awayTeam']['name'])
-            st.write("**Competição:** " + jogo['competition']['name'])
+    if 'matches' in dados:
+        for jogo in reversed(dados['matches'][-10:]):
+            casa = jogo['homeTeam']
+            fora = jogo['awayTeam']
+            score = jogo['score']['fullTime']
+            
+            # Criar um "botão" expansível para ver estatísticas
+            with st.expander(f"🗓️ {jogo['utcDate'][:10]} | {casa['shortName']} {score['home']} - {score['away']} {fora['shortName']}"):
+                col1, col2, col3 = st.columns([2,1,2])
+                with col1:
+                    st.image(casa['crest'], width=60)
+                    st.write(f"**{casa['name']}**")
+                with col2:
+                    st.markdown(f"<p class='score'>{score['home']} - {score['away']}</p>", unsafe_allow_html=True)
+                with col3:
+                    st.image(fora['crest'], width=60)
+                    st.write(f"**{fora['name']}**")
+                
+                st.divider()
+                st.write(f"🏆 **Competição:** {jogo['competition']['name']}")
+                st.write(f"📍 **Jornada:** {jogo.get('matchday', 'N/A')}")
 
-# --- ABA: PLANTEL ---
 elif aba == "Plantel":
-    st.header("🦁 Plantel Principal")
+    st.title("🦁 Plantel Principal")
     dados = get_data(f"teams/{PORTO_ID}")
-    for jogador in dados['squad']:
-        st.write(f"👕 **{jogador['jerseyNumber'] if jogador['jerseyNumber'] else ''}** - {jogador['name']} ({jogador['position']})")
+    if 'squad' in dados:
+        for j in dados['squad']:
+            # Correção do erro: usamos o método .get() para não dar erro se faltar o número
+            numero = j.get('jerseyNumber', 'S/N')
+            st.markdown(f"""
+            <div style='background: white; padding: 10px; border-radius: 10px; margin-bottom: 5px; color: black;'>
+                <b>#{numero}</b> - {j['name']} <br>
+                <small>📍 {j['position']} | 🏳️ {j['nationality']}</small>
+            </div>
+            """, unsafe_allow_html=True)
 
-# --- ABA: CALENDÁRIO ---
 elif aba == "Calendário":
-    st.header("📅 Próximos Jogos")
+    st.title("📅 Próximos Jogos")
     dados = get_data(f"teams/{PORTO_ID}/matches?status=SCHEDULED")
-    for jogo in dados['matches'][:5]:
-        st.info(f"{jogo['utcDate'][:10]} | {jogo['homeTeam']['name']} vs {jogo['awayTeam']['name']}")
+    if 'matches' in dados:
+        for jogo in dados['matches'][:5]:
+            st.info(f"📅 {jogo['utcDate'][:10]} vs **{jogo['awayTeam']['name'] if jogo['homeTeam']['id'] == PORTO_ID else jogo['homeTeam']['name']}**")
+            
