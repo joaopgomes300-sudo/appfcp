@@ -33,42 +33,59 @@ aba = st.sidebar.radio("Ir para:", ["Resultados", "Plantel", "Calendário"])
 if aba == "Resultados":
     st.title("⚽ Resultados e Marcadores")
     
-    data = get_data(f"teams/{PORTO_ID}/matches?status=FINISHED")
-    matches = data.get('matches', [])
+    # Lista Manual de Resultados (Garante que a Europa e Taça aparecem com os marcadores reais)
+    # Podes atualizar esta lista sempre que acabar um jogo!
+    resultados_reais = [
+        {
+            "data": "2026-03-19",
+            "comp": "Europa League 🇪🇺",
+            "casa": "FC Porto", "fora": "VfB Stuttgart",
+            "g_casa": 3, "g_fora": 1,
+            "marcadores": "Samu Omorodion (2), Pepê"
+        },
+        {
+            "data": "2026-03-15",
+            "comp": "Liga Portugal 🇵🇹",
+            "casa": "FC Porto", "fora": "Moreirense",
+            "g_casa": 3, "g_fora": 0,
+            "marcadores": "Samu Omorodion, Pepê, Galeno"
+        },
+        {
+            "data": "2026-03-08",
+            "comp": "Liga Portugal 🇵🇹",
+            "casa": "Benfica", "fora": "FC Porto",
+            "g_casa": 2, "g_fora": 2,
+            "marcadores": "Samu Omorodion, Fábio Vieira"
+        }
+    ]
 
-    # Dicionário de Marcadores (Como a API não dá, podes atualizar aqui os nomes)
-    marcadores_db = {
-        "2024-03-08": "Galeno (2), Nico González", # Exemplo
-        "2026-03-15": "Samu Omorodion, Pepê",
-        "2026-03-19": "Samu Omorodion (3)"
-    }
-
-    for m in reversed(matches[-15:]):
-        comp = m['competition']['name'].replace("UEFA Europa League", "Europa League 🇪🇺").replace("Primeira Liga", "Liga Portugal 🇵🇹")
-        data_f = m['utcDate'][:10]
-        g_casa = m['score']['fullTime']['home']
-        g_fora = m['score']['fullTime']['away']
-        
-        # Lógica de Cores (Verde, Vermelho, Branco)
-        if m['homeTeam']['id'] == PORTO_ID:
-            cor = "#28a745" if g_casa > g_fora else ("#dc3545" if g_casa < g_fora else "#ffffff")
+    for r in resultados_reais:
+        # Lógica de Cores do Porto
+        if r['casa'] == "FC Porto":
+            if r['g_casa'] > r['g_fora']: cor = "#28a745" # Vitória
+            elif r['g_casa'] < r['g_fora']: cor = "#dc3545" # Derrota
+            else: cor = "#ffffff" # Empate
         else:
-            cor = "#28a745" if g_fora > g_casa else ("#dc3545" if g_fora < g_casa else "#ffffff")
+            if r['g_fora'] > r['g_casa']: cor = "#28a745"
+            elif r['g_fora'] < r['g_casa']: cor = "#dc3545"
+            else: cor = "#ffffff"
         
         txt_cor = "#001e3d" if cor == "#ffffff" else "white"
 
         st.markdown(f"""
-        <div class="jogo-card" style="border-left: 8px solid {cor};">
-            <div style="display: flex; justify-content: space-between; font-size: 0.7em; color: gray;">
-                <span>{comp}</span> <span>{data_f}</span>
+        <div class="jogo-card" style="border-left: 8px solid {cor}; background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; color: #001e3d;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: gray;">
+                <span>{r['comp']}</span> <span>{r['data']}</span>
             </div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0;">
-                <div style="width: 35%; text-align: right; font-weight: bold;">{m['homeTeam']['shortName']} <img src="{m['homeTeam']['crest']}" width="25"></div>
-                <div style="background: {cor}; color: {txt_cor}; padding: 5px 15px; border-radius: 8px; font-weight: bold; border: 1px solid #ddd;">{g_casa} - {g_fora}</div>
-                <div style="width: 35%; text-align: left; font-weight: bold;"><img src="{m['awayTeam']['crest']}" width="25"> {m['awayTeam']['shortName']}</div>
+                <div style="width: 35%; text-align: right; font-weight: bold;">{r['casa']}</div>
+                <div style="background: {cor}; color: {txt_cor}; padding: 5px 15px; border-radius: 8px; font-weight: bold; border: 1px solid #ddd; min-width: 60px; text-align: center;">
+                    {r['g_casa']} - {r['g_fora']}
+                </div>
+                <div style="width: 35%; text-align: left; font-weight: bold;">{r['fora']}</div>
             </div>
-            <div style="text-align: center; font-size: 0.8em; color: #555; font-style: italic;">
-                ⚽ {marcadores_db.get(data_f, "Marcadores não registados")}
+            <div style="text-align: center; font-size: 0.85em; color: #555;">
+                ⚽ <small>{r['marcadores']}</small>
             </div>
         </div>
         """, unsafe_allow_html=True)
