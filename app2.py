@@ -190,7 +190,7 @@ elif aba == "Plantel":
     html += "</table></div>"
     st.markdown(html, unsafe_allow_html=True)
 
-    elif aba == "Resultados":
+elif aba == "Resultados":
     st.markdown('<p class="main-title">⚽ Últimos Resultados</p>', unsafe_allow_html=True)
 
     # LISTA BASEADA NOS TEUS PRINTS (Ordenada do mais recente para o antigo)
