@@ -202,7 +202,7 @@ elif aba == "Resultados":
         {"dt": "22/02/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Porto", "lc": "https://tmssl.akamaized.net/images/wappen/head/720.png", "fr": "Rio Ave", "lf": "https://tmssl.akamaized.net/images/wappen/head/2425.png", "res": "1 - 0", "cor": "#28a745"},
         {"dt": "15/02/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Nacional", "lc": "https://upload.wikimedia.org/wikipedia/pt/8/89/Logo_Nacional_Madeira.png", "fr": "Porto", "lf": "https://tmssl.akamaized.net/images/wappen/head/720.png", "res": "0 - 1", "cor": "#28a745"},
         {"dt": "09/02/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Porto", "lc": "https://tmssl.akamaized.net/images/wappen/head/720.png", "fr": "Sporting", "lf": "https://tmssl.akamaized.net/images/wappen/head/336.png", "res": "1 - 1", "cor": "#6c757d"},
-        {"dt": "02/02/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Casa Pia", "lc": "https://upload.wikimedia.org/wikipedia/pt/d/d4/Casa_Pia_AC.png", "fr": "Porto", "lf": "https://tmssl.akamaized.net/images/wappen/head/720.png", "res": "2 - 1", "cor": "#dc3545"},
+        {"dt": "02/02/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Casa Pia", "lc": "https://tmssl.akamaized.net/images/wappen/head/3396.png", "fr": "Porto", "lf": "https://tmssl.akamaized.net/images/wappen/head/720.png", "res": "2 - 1", "cor": "#dc3545"},
         {"dt": "29/01/26", "cp": "UEFA Europa League 🇪🇺", "cs": "Porto", "lc": "https://tmssl.akamaized.net/images/wappen/head/720.png", "fr": "Rangers", "lf": "https://tmssl.akamaized.net/images/wappen/head/124.png", "res": "3 - 1", "cor": "#28a745"}
     ]
 
