@@ -193,8 +193,6 @@ elif aba == "Plantel":
 elif aba == "Resultados":
     st.markdown('<p class="main-title">⚽ Últimos Resultados</p>', unsafe_allow_html=True)
 
-    # LISTA BASEADA NOS TEUS PRINTS (Ordenada do mais recente para o antigo)
-    # Vitórias: #28a745 | Empates: #6c757d | Derrotas: #dc3545
     ultimos_jogos = [
         {"dt": "15/03/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Porto", "lc": "https://crests.football-data.org/503.png", "fr": "Moreirense", "lf": "https://crests.football-data.org/5735.png", "res": "3 - 0", "cor": "#28a745"},
         {"dt": "12/03/26", "cp": "UEFA Europa League 🇪🇺", "cs": "Stuttgart", "lc": "https://crests.football-data.org/10.png", "fr": "Porto", "lf": "https://crests.football-data.org/503.png", "res": "1 - 2", "cor": "#28a745"},
@@ -205,29 +203,18 @@ elif aba == "Resultados":
         {"dt": "15/02/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Nacional", "lc": "https://crests.football-data.org/5529.png", "fr": "Porto", "lf": "https://crests.football-data.org/503.png", "res": "0 - 1", "cor": "#28a745"},
         {"dt": "09/02/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Porto", "lc": "https://crests.football-data.org/503.png", "fr": "Sporting", "lf": "https://crests.football-data.org/498.png", "res": "1 - 1", "cor": "#6c757d"},
         {"dt": "02/02/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Casa Pia", "lc": "https://crests.football-data.org/5530.png", "fr": "Porto", "lf": "https://crests.football-data.org/503.png", "res": "2 - 1", "cor": "#dc3545"},
-        {"dt": "29/01/26", "cp": "UEFA Europa League 🇪🇺", "cs": "Porto", "lc": "https://crests.football-data.org/503.png", "fr": "Rangers", "lf": "https://crests.football-data.org/1053.png", "res": "3 - 1", "cor": "#28a745"},
+        {"dt": "29/01/26", "cp": "UEFA Europa League 🇪🇺", "cs": "Porto", "lc": "https://crests.football-data.org/503.png", "fr": "Rangers", "lf": "https://crests.football-data.org/1053.png", "res": "3 - 1", "cor": "#28a745"}
     ]
 
     for j in ultimos_jogos:
-        st.markdown(f"""
-        <div style="background-color: white; border-radius: 15px; padding: 18px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.06); border-left: 10px solid {j['cor']};">
-            <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #777; margin-bottom: 8px; font-weight: bold;">
-                <span>{j['cp']}</span>
-                <span>{j['dt']}</span>
-            </div>
-            
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="width: 38%; text-align: right; font-weight: bold; color: #001e3d;">
-                    {j['cs']} <img src="{j['lc']}" width="25" style="vertical-align: middle; margin-left: 8px;">
-                </div>
-                
-                <div style="background-color: {j['cor']}; color: white; padding: 6px 15px; border-radius: 8px; font-weight: 800; min-width: 70px; text-align: center; font-size: 1.1em;">
-                    {j['res']}
-                </div>
-                
-                <div style="width: 38%; text-align: left; font-weight: bold; color: #001e3d;">
-                    <img src="{j['lf']}" width="25" style="vertical-align: middle; margin-right: 8px;"> {j['fr']}
-                </div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        # Montamos a string primeiro sem espaços estranhos no início
+        card_html = f"<div style='background-color: white; border-radius: 15px; padding: 18px; margin-bottom: 15px; border-left: 10px solid {j['cor']}; color: #001e3d; box-shadow: 0 4px 10px rgba(0,0,0,0.1);'>"
+        card_html += f"<div style='display: flex; justify-content: space-between; font-size: 0.8em; color: #777; margin-bottom: 8px; font-weight: bold;'><span>{j['cp']}</span><span>{j['dt']}</span></div>"
+        card_html += f"<div style='display: flex; justify-content: space-between; align-items: center;'>"
+        card_html += f"<div style='width: 38%; text-align: right; font-weight: bold;'>{j['cs']} <img src='{j['lc']}' width='25' style='vertical-align: middle; margin-left: 8px;'></div>"
+        card_html += f"<div style='background-color: {j['cor']}; color: white !important; padding: 6px 15px; border-radius: 8px; font-weight: 800; min-width: 70px; text-align: center;'>{j['res']}</div>"
+        card_html += f"<div style='width: 38%; text-align: left; font-weight: bold;'><img src='{j['lf']}' width='25' style='vertical-align: middle; margin-right: 8px;'> {j['fr']}</div>"
+        card_html += "</div></div>"
+        
+        # Agora desenhamos
+        st.write(card_html, unsafe_allow_html=True)
