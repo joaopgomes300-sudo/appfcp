@@ -27,7 +27,7 @@ PORTO_ID = 503
 def get_data(endpoint):
     return requests.get(f"https://api.football-data.org/v4/{endpoint}", headers=HEADERS).json()
 
-aba = st.sidebar.radio("Ir para:", ["Resultados", "Plantel", "Calendário"])
+aba = st.sidebar.radio("Ir para:", ["Estatísticas", "Resultados", "Plantel", "Calendário"])
 
 # --- ABA NOVA: ESTATÍSTICAS E TABELA ---
 
