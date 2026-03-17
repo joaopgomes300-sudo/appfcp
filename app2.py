@@ -214,8 +214,6 @@ for j in ultimos_jogos:
         # O unsafe_allow_html=True é que faz a magia
         st.write(card, unsafe_allow_html=True)
 
-st.write(card, unsafe_allow_html=True)
-
 elif aba == "Estatísticas":
     st.markdown('<p class="main-title">📊 Classificação em Tempo Real</p>', unsafe_allow_html=True)
 
