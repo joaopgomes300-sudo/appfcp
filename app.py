@@ -1,32 +1,44 @@
 import streamlit as st
 import requests
 
-# Configuração da página (deve ser a primeira linha)
+# Configuração da página
 st.set_page_config(page_title="Porto Resultados", page_icon="🔵")
 
-# Estilo CSS para as cores do Porto
+# Estilo CSS corrigido para visibilidade total
 st.markdown("""
     <style>
-    .main { background-color: #f0f2f6; }
-    .stText { color: #00428c; }
+    /* Forçar o fundo da página para um tom cinza claro */
+    .stApp {
+        background-color: #f0f2f6;
+    }
+    /* Estilo dos cartões de jogo */
     .jogo-card {
-        background-color: white;
-        padding: 15px;
-        border-radius: 10px;
-        border-left: 5px solid #00428c;
-        margin-bottom: 10px;
-        box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        background-color: #ffffff !important;
+        padding: 20px;
+        border-radius: 12px;
+        border-left: 8px solid #00428c;
+        margin-bottom: 15px;
+        box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+    }
+    /* Forçar a cor do texto dentro dos cartões para Preto/Azul */
+    .jogo-card h4, .jogo-card p, .jogo-card b, .jogo-card span {
+        color: #1e1e1e !important;
+        margin: 0;
+    }
+    .data-texto {
+        color: #666666 !important;
+        font-size: 0.8rem;
+    }
+    .resultado-texto {
+        font-size: 1.1rem;
+        color: #00428c !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# Cabeçalho com Logótipo
-col1, col2 = st.columns([1, 4])
-with col1:
-    st.image("https://upload.wikimedia.org/wikipedia/pt/1/1c/FC_Porto.png", width=70)
-with col2:
-    st.title("FC Porto")
-    st.subheader("Resultados Recentes")
+# Título Simples
+st.title("🔵 FC Porto")
+st.subheader("Resultados Recentes")
 
 # Configurações da API
 API_KEY = "39ef6a8b48ea4d0ea3a5157105ec0ddf"
@@ -39,7 +51,7 @@ try:
     response = requests.get(URL, headers=headers)
     if response.status_code == 200:
         jogos = response.json()['matches']
-        # Inverter para mostrar o mais recente primeiro e pegar os últimos 5
+        # Mostra os últimos 8 jogos, do mais recente para o mais antigo
         for jogo in reversed(jogos[-8:]):
             casa = jogo['homeTeam']['name']
             fora = jogo['awayTeam']['name']
@@ -47,17 +59,17 @@ try:
             gols_fora = jogo['score']['fullTime']['away']
             data = jogo['utcDate'][:10]
             
-            # Criar um "Card" para cada jogo
-            with st.container():
-                st.markdown(f"""
+            # Formatação da data (DD/MM/AAAA)
+            data_pt = "/".join(reversed(data.split("-")))
+
+            # HTML do Card com texto forçado em cor escura
+            st.markdown(f"""
                 <div class="jogo-card">
-                    <small>{data}</small><br>
-                    <strong>{casa} {gols_casa} — {gols_fora} {fora}</strong>
+                    <span class="data-texto">{data_pt}</span><br>
+                    <b class="resultado-texto">{casa} {gols_casa} — {gols_fora} {fora}</b>
                 </div>
                 """, unsafe_allow_html=True)
     else:
-        st.error("Sem ligação aos dados. Tenta mais tarde.")
-except:
-    st.error("Erro técnico ao carregar resultados.")
-
-st.info("App atualizada automaticamente via Football-Data API.")
+        st.error("Erro ao ligar à API. Verifica a tua chave.")
+except Exception as e:
+    st.error(f"Erro técnico: {e}")
