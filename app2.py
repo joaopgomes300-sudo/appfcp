@@ -73,3 +73,74 @@ if aba == "Estatísticas":
     html_tabela += "</table>"
     st.markdown(html_tabela, unsafe_allow_html=True)
     st.caption("Última atualização: 17 de Março de 2026")
+
+elif aba == "Plantel":
+    st.title("👥 Squad Details")
+    
+    # Lista organizada por blocos para facilitar a gestão
+    meu_plantel = {
+        "GUARDA-REDES": [
+            {"num": 99, "nome": "Diogo Costa", "nac": "Portugal", "band": "🇵🇹"},
+            {"num": 14, "nome": "Cláudio Ramos", "nac": "Portugal", "band": "🇵🇹"},
+            {"num": 51, "nome": "Diogo Fernandes", "nac": "Portugal", "band": "🇵🇹"},
+            {"num": 24, "nome": "João Costa", "nac": "Portugal", "band": "🇵🇹"},
+        ],
+        "DEFESAS": [
+            {"num": 3, "nome": "Thiago Silva", "nac": "Brazil", "band": "🇧🇷"},
+            {"num": 4, "nome": "Jakub Kiwior", "nac": "Poland", "band": "🇵🇱"},
+            {"num": 5, "nome": "Jan Bednarek", "nac": "Poland", "band": "🇵🇱"},
+            {"num": 12, "nome": "Zaidu Sanusi", "nac": "Nigeria", "band": "🇳🇬"},
+            {"num": 18, "nome": "Nehuen Perez", "nac": "Argentina", "band": "🇦🇷"},
+            {"num": 20, "nome": "Alberto Costa", "nac": "Portugal", "band": "🇵🇹"},
+            {"num": 21, "nome": "Dominik Prpic", "nac": "Croatia", "band": "🇭🇷"},
+            {"num": 52, "nome": "Martim Fernandes", "nac": "Portugal", "band": "🇵🇹"},
+            {"num": 74, "nome": "Francisco Moura", "nac": "Portugal", "band": "🇵🇹"},
+            {"num": 46, "nome": "Pedro Lima", "nac": "Brazil", "band": "🇧🇷"},
+            {"num": "-", "nome": "Gabriel Brás", "nac": "Portugal", "band": "🇵🇹"},
+        ],
+        "MÉDIOS": [
+            {"num": 8, "nome": "Victor Froholdt", "nac": "Denmark", "band": "🇩🇰"},
+            {"num": 10, "nome": "Gabri Veiga", "nac": "Spain", "band": "🇪🇸"},
+            {"num": 13, "nome": "Pablo Rosario", "nac": "Netherlands", "band": "🇳🇱"},
+            {"num": 22, "nome": "Alan Varela", "nac": "Argentina", "band": "🇦🇷"},
+            {"num": 16, "nome": "Nico González", "nac": "Spain", "band": "🇪🇸"},
+            {"num": 31, "nome": "Otávio", "nac": "Brazil", "band": "🇧🇷"},
+            {"num": 42, "nome": "Seko Fofana", "nac": "Ivory Coast", "band": "🇨🇮"},
+            {"num": 86, "nome": "Rodrigo Mora", "nac": "Portugal", "band": "🇵🇹"},
+            {"num": "-", "nome": "André Oliveira", "nac": "Portugal", "band": "🇵🇹"},
+        ],
+        "AVANÇADOS": [
+            {"num": 11, "nome": "Pepê", "nac": "Brazil", "band": "🇧🇷"},
+            {"num": 9, "nome": "Samu Omorodion", "nac": "Spain", "band": "🇪🇸"},
+            {"num": 7, "nome": "William Gomes", "nac": "Brazil", "band": "🇧🇷"},
+            {"num": 17, "nome": "Borja Sainz", "nac": "Spain", "band": "🇪🇸"},
+            {"num": 26, "nome": "Luuk de Jong", "nac": "Netherlands", "band": "🇳🇱"},
+            {"num": 29, "nome": "Terem Moffi", "nac": "Nigeria", "band": "🇳🇬"},
+            {"num": 27, "nome": "Deniz Gül", "nac": "Sweden", "band": "🇸🇪"},
+            {"num": 72, "nome": "André Miranda", "nac": "Portugal", "band": "🇵🇹"},
+        ]
+    }
+
+    html = """<table class="fcp-table">"""
+    
+    for posicao, jogadores in meu_plantel.items():
+        # Linha de separação por posição
+        html += f"""
+        <tr style="background-color: #00428c; color: white; font-weight: bold;">
+            <td colspan="4" style="text-align: left; padding-left: 15px;">{posicao}</td>
+        </tr>
+        <tr style="background-color: #002d5c; color: #ffd700; font-size: 0.8em;">
+            <th>No.</th><th style="text-align: left;">Nome</th><th>Nacionalidade</th><th>Info</th>
+        </tr>"""
+        
+        for j in jogadores:
+            html += f"""
+            <tr>
+                <td><b>{j['num']}</b></td>
+                <td style="text-align: left;">{j['nome']}</td>
+                <td>{j['band']} {j['nac']}</td>
+                <td style="font-size: 0.8em; color: gray;">✔</td>
+            </tr>"""
+    
+    html += "</table>"
+    st.markdown(html, unsafe_allow_html=True)
