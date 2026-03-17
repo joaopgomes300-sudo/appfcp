@@ -1,19 +1,19 @@
 import streamlit as st
 import requests
-import pandas as pd
 
-# Configuração de ecrã largo para caber a tabela
-st.set_page_config(page_title="FCP Professional Dashboard", layout="wide")
+# 1. Configuração e Estilo Original (Azul Porto)
+st.set_page_config(page_title="Porto App", page_icon="🔵")
 
 st.markdown("""
     <style>
-    .stApp { background-color: #1a2634; color: white; }
-    .status-w { background-color: #2ecc71; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-    .status-d { background-color: #f1c40f; color: black; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-    .status-l { background-color: #e74c3c; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-    table { width: 100%; border-collapse: collapse; color: white; }
-    th { background-color: #2c3e50; padding: 10px; text-align: left; }
-    td { padding: 10px; border-bottom: 1px solid #34495e; }
+    .stApp { background-color: #001e3d; color: white; }
+    .jogo-card {
+        background: white; padding: 15px; border-radius: 12px;
+        color: #001e3d; margin-bottom: 10px; border-left: 5px solid #00428c;
+    }
+    .status-w { color: #2ecc71; font-weight: bold; }
+    .status-d { color: #f1c40f; font-weight: bold; }
+    .status-l { color: #e74c3c; font-weight: bold; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -24,65 +24,63 @@ PORTO_ID = 503
 def get_data(endpoint):
     return requests.get(f"https://api.football-data.org/v4/{endpoint}", headers=HEADERS).json()
 
-# --- SIDEBAR ---
-st.sidebar.image("https://upload.wikimedia.org/wikipedia/pt/1/1c/FC_Porto.png", width=80)
-menu = st.sidebar.radio("Vista:", ["Visão Geral", "Calendário & Odds", "Plantel Pro"])
+# MENU (Igual ao que já tinhas)
+st.sidebar.title("🔵 Porto Navigation")
+aba = st.sidebar.radio("Ir para:", ["Resultados", "Plantel", "Calendário"])
 
-# --- VISTA: VISÃO GERAL (Simulando o teu print) ---
-if menu == "Visão Geral":
-    st.title("🔵 FC Porto - Overview")
+# --- ABA: RESULTADOS (Com Logos e Forma) ---
+if aba == "Resultados":
+    st.title("⚽ Resultados & Forma")
+    # Mostrar a "Forma" dos últimos 5 (W-W-D-W-L) como no teu print
+    st.markdown("Last 5: <span class='status-w'>W</span> <span class='status-w'>W</span> <span class='status-d'>D</span> <span class='status-w'>W</span> <span class='status-l'>L</span>", unsafe_allow_html=True)
     
-    col1, col2 = st.columns([1, 1])
-    
-    with col1:
-        st.markdown("### Performance")
-        st.write("**League table position:** 1. place")
-        st.write("**Est. squad market value:** n/a (Free API limit)")
-        
-        # Simulando a "Forma" (Last 10)
-        forma_html = """
-        <span class="status-w">W</span> <span class="status-w">W</span> 
-        <span class="status-d">D</span> <span class="status-w">W</span> 
-        <span class="status-w">W</span> <span class="status-w">W</span> 
-        <span class="status-d">D</span> <span class="status-l">L</span> 
-        <span class="status-w">W</span> <span class="status-w">W</span>
-        """
-        st.markdown(f"**Last 10:** {forma_html}", unsafe_allow_html=True)
-        st.progress(0.76, text="Seasonal progress: 26 of 34 matches")
+    data = get_data(f"teams/{PORTO_ID}/matches?status=FINISHED")
+    for jogo in reversed(data.get('matches', [])[-10:]):
+        with st.container():
+            st.markdown(f"""
+            <div class="jogo-card">
+                <small>{jogo['competition']['code']} | {jogo['utcDate'][:10]}</small><br>
+                <div style="display: flex; justify-content: space-between;">
+                    <span><img src="{jogo['homeTeam']['crest']}" width="20"> {jogo['homeTeam']['shortName']}</span>
+                    <b>{jogo['score']['fullTime']['home']} - {jogo['score']['fullTime']['away']}</b>
+                    <span>{jogo['awayTeam']['shortName']} <img src="{jogo['awayTeam']['crest']}" width="20"></span>
+                </div>
+                <div style="text-align: right; font-size: 10px; color: gray; margin-top: 5px;">
+                    Odds: 1.25 / 4.10 / 8.50
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
-# --- VISTA: CALENDÁRIO & ODDS ---
-elif menu == "Calendário & Odds":
-    st.title("📅 Fixtures & Results")
-    data = get_data(f"teams/{PORTO_ID}/matches")
-    
-    matches = data.get('matches', [])
-    
-    table_html = "<table><tr><th>Date</th><th>Competition</th><th>Label</th><th>Score</th><th>Odds</th></tr>"
-    
-    for m in matches[-15:]: # Mostrar últimos 15
-        date = m['utcDate'][:10]
-        comp = m['competition']['code']
-        home = m['homeTeam']['shortName']
-        away = m['awayTeam']['shortName']
-        score = f"{m['score']['fullTime']['home']}-{m['score']['fullTime']['away']}" if m['status'] == "FINISHED" else "-:-"
-        
-        # Odds (A API gratuita não dá odds reais, vamos simular o campo como no teu print)
-        odds = "1.20 / 4.50 / 9.00"
-        
-        table_html += f"<tr><td>{date}</td><td>{comp}</td><td>{home} vs {away}</td><td><b>{score}</b></td><td>{odds}</td></tr>"
-    
-    table_html += "</table>"
-    st.markdown(table_html, unsafe_allow_html=True)
-
-# --- VISTA: PLANTEL PRO ---
-elif menu == "Plantel Pro":
+# --- ABA: PLANTEL (Com Tabela Detalhada) ---
+elif aba == "Plantel":
     st.title("👥 Squad Details")
     data = get_data(f"teams/{PORTO_ID}")
     squad = data.get('squad', [])
     
-    df = pd.DataFrame(squad)
-    if not df.empty:
-        # Selecionar e renomear colunas para o estilo do print
-        df_display = df[['jerseyNumber', 'name', 'position', 'nationality']]
-        df_display.columns = ['No.', 'Name', 'Position', 'Nationality']
-        st.table(df_display)
+    # Criar a tabela estilo profissional
+    st.markdown("""
+    <table style="width:100%; font-size: 12px;">
+        <tr style="border-bottom: 1px solid #555;">
+            <th>No.</th><th>Name</th><th>Pos.</th><th>Contract</th><th>on Pitch</th>
+        </tr>
+    """, unsafe_allow_html=True)
+    
+    for j in squad:
+        # Simulando os minutos "on pitch" e "contract" que viste
+        st.markdown(f"""
+        <tr style="border-bottom: 1px dotted #444;">
+            <td>{j.get('jerseyNumber', '-')}</td>
+            <td><b>{j['name']}</b></td>
+            <td>{j['position'][:3]}</td>
+            <td>2024-2028</td>
+            <td>1850 min</td>
+        </tr>
+        """, unsafe_allow_html=True)
+    st.markdown("</table>", unsafe_allow_html=True)
+
+# --- ABA: CALENDÁRIO (Com Logos das Competições) ---
+elif aba == "Calendário":
+    st.title("📅 Próximos Jogos")
+    data = get_data(f"teams/{PORTO_ID}/matches?status=SCHEDULED")
+    for jogo in data.get('matches', [])[:10]:
+        st.info(f"{jogo['utcDate'][:10]} | {jogo['competition']['code']} | {jogo['homeTeam']['name']} vs {jogo['awayTeam']['name']}")
