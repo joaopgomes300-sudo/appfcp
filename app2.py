@@ -217,36 +217,40 @@ for j in ultimos_jogos:
 import pandas as pd
 
 elif aba == "Estatísticas":
-    st.markdown('<p class="main-title">📊 Classificação Liga Portugal</p>', unsafe_allow_html=True)
+    st.markdown('<p class="main-title">📊 Classificação em Tempo Real</p>', unsafe_allow_html=True)
 
     try:
-        # Link estável para scraping
+        # 1. PEGAR OS DADOS (Scraping automático da ESPN)
         url = "https://www.espn.com.pt/futebol/classificacao/_/liga/por.1"
-        
-        # Lemos as tabelas do site
         tabelas = pd.read_html(url)
         
-        # A ESPN separa nomes de equipas (tabela 0) dos dados (tabela 1)
+        # Juntamos nomes das equipas com os números
         df_nomes = tabelas[0]
         df_stats = tabelas[1]
-        
-        # Juntamos as duas partes
         df_liga = pd.concat([df_nomes, df_stats], axis=1)
-        
-        # Ajustamos os nomes das colunas para ficar limpo
-        df_liga.columns = ['Equipa', 'J', 'V', 'E', 'D', 'GM', 'GS', 'DG', 'PTS']
 
-        # Estilização: Destacar o Porto
-        def destacar_porto(row):
-            return ['background-color: #e6f0ff' if 'Porto' in str(row.Equipa) else '' for _ in row]
+        # 2. LIMPAR A TABELA
+        # Vamos manter apenas o essencial: Nome, Jogos, Vitórias, Empates, Derrotas, Pontos
+        df_liga = df_liga.iloc[:, [0, 1, 2, 3, 4, 7]] 
+        df_liga.columns = ['Equipa', 'J', 'V', 'E', 'D', 'PTS']
+
+        # 3. MOSTRAR A TABELA NO ESTILO DO STREAMLIT
+        # O 'style.apply' serve para destacar o Porto automaticamente
+        def destacar_porto(val):
+            color = '#e6f0ff' if 'Porto' in str(val) else ''
+            return f'background-color: {color}'
 
         st.dataframe(
-            df_liga.style.apply(destacar_porto, axis=1),
+            df_liga.style.applymap(destacar_porto, subset=['Equipa']),
             use_container_width=True,
             hide_index=True
         )
-        st.caption("Dados atualizados automaticamente via ESPN")
+        st.caption("✅ Dados sincronizados com a Liga Portugal via ESPN")
 
     except Exception as e:
-        st.error("Erro ao carregar tabela em tempo real.")
-        st.info("Verifica se a biblioteca 'lxml' está instalada: pip install lxml")
+        st.error("⚠️ Não foi possível carregar os dados automáticos.")
+        st.info("A mostrar dados de reserva...")
+        # Se o site falhar, ele mostra estes:
+        st.table({"Equipa": ["Sporting CP", "FC Porto", "SL Benfica"], "PTS": [63, 61, 59]})
+
+        st.write(card, unsafe_allow_html=True) # <-- Vê se este parêntese está lá!
