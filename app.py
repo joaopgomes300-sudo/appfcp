@@ -46,11 +46,11 @@ if aba == "Resultados":
             </div>
             """, unsafe_allow_html=True)
 
-# --- ABA: PLANTEL (Com Correção Manual de Números) ---
+# --- ABA: PLANTEL (Ordenado por Posição, Bandeiras e Números Manuais) ---
 elif aba == "Plantel":
     st.title("👥 Squad Details")
     
-    # 1. O teu dicionário manual. Podes adicionar todos os que faltarem aqui!
+    # 1. O teu dicionário de números manuais (podes continuar a encher aqui)
     numeros_manuais = {
         "Diogo Costa": 99,
         "Cláudio Ramos": 14,
@@ -71,43 +71,70 @@ elif aba == "Plantel":
         "Galeno": 13,
         "Samu Omorodion": 9,
         "Deniz Gül": 27,
-        "Rodrigo Mora": 86
+        "Rodrigo Mora": 86 # Exemplo
+    }
+
+    # 2. Mapeamento para tradução e ORDENAÇÃO
+    # Atribuímos um peso (0 a 3) para forçar a ordem na lista
+    ordem_posicoes = {
+        "Goalkeeper": {"label": "Guarda-redes", "peso": 0},
+        "Defence": {"label": "Defesa", "peso": 1},
+        "Midfield": {"label": "Médio", "peso": 2},
+        "Offence": {"label": "Avançado", "peso": 3}
+    }
+
+    # 3. Dicionário de Bandeiras (conforme o nome da API)
+    bandeiras = {
+        "Portugal": "🇵🇹", "Brazil": "🇧🇷", "Argentina": "🇦🇷", 
+        "Spain": "🇪🇸", "Sweden": "🇸🇪", "Denmark": "🇩🇰", 
+        "Croatia": "🇭🇷", "Nigeria": "🇳🇬", "Canada": "🇨🇦"
     }
 
     data = get_data(f"teams/{PORTO_ID}")
     squad = data.get('squad', [])
-    
+
+    # Lógica de Ordenação: Primeiro GK, depois Defesa, etc.
+    # Usamos o 'peso' que definimos acima para ordenar
+    squad_ordenado = sorted(
+        squad, 
+        key=lambda x: ordem_posicoes.get(x['position'], {"peso": 4})["peso"]
+    )
+
     html = """
     <table class="fcp-table">
         <tr>
-            <th style="width: 15%;">No.</th>
-            <th style="text-align: left;">Name</th>
-            <th style="width: 25%;">Position</th>
-            <th style="width: 25%;">Nationality</th>
+            <th style="width: 10%;">No.</th>
+            <th style="text-align: left; width: 40%;">Nome</th>
+            <th style="width: 25%;">Posição</th>
+            <th style="width: 25%;">Nacionalidade</th>
         </tr>"""
     
-    for j in squad:
-        nome_jogador = j['name']
+    for j in squad_ordenado:
+        nome = j['name']
         
-        # Lógica inteligente: 
-        # 1. Tenta o número da API. 
-        # 2. Se for None ou '-', tenta o teu dicionário manual.
-        # 3. Se não estiver em nenhum lado, mantém '-'
-        numero = j.get('jerseyNumber')
-        if not numero or numero == '-':
-            numero = numeros_manuais.get(nome_jogador, "-")
-
+        # Busca número (Manual > API > Traço)
+        num = j.get('jerseyNumber')
+        if not num or num == '-':
+            num = numeros_manuais.get(nome, "-")
+            
+        # Tradução da Posição
+        pos_info = ordem_posicoes.get(j['position'], {"label": j['position'], "peso": 4})
+        pos_pt = pos_info["label"]
+        
+        # Bandeira
+        nacionalidade = j.get('nationality', '')
+        bandeira = bandeiras.get(nacionalidade, "🏳️")
+        
         html += f"""
         <tr>
-            <td><b>{numero}</b></td>
-            <td style="text-align: left;">{nome_jogador}</td>
-            <td>{j['position']}</td>
-            <td>{j['nationality']}</td>
+            <td><b>{num}</b></td>
+            <td style="text-align: left;">{nome}</td>
+            <td>{pos_pt}</td>
+            <td>{bandeira} <small>{nacionalidade}</small></td>
         </tr>"""
     
     html += "</table>"
     st.markdown(html, unsafe_allow_html=True)
-
 # --- ABA: CALENDÁRIO (Com Horários e Símbolos) ---
 elif aba == "Calendário":
     st.title("📅 Próximos Jogos")
