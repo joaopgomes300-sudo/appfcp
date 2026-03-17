@@ -93,22 +93,22 @@ if aba == "Estatísticas":
 elif aba == "Resultados":
     st.title("⚽ Resultados")
     
-    # 1. Puxamos os dados da API (Geralmente só traz Liga)
+    # 1. Puxar dados da API (Geralmente focado na Liga)
     res_data = get_data(f"teams/{PORTO_ID}/matches?status=FINISHED")
     matches_api = res_data.get('matches', [])
 
-    # 2. Criamos uma lista manual para os jogos que a API "esquece" (Europa e Taça)
-    # Podes ir adicionando aqui os jogos que faltarem na API
+    # 2. Lista Manual para jogos que a API gratuita não alcança (Europa e Taças)
+    # IMPORTANTE: Manter o formato de data "AAAA-MM-DD" para a ordenação funcionar
     jogos_extra = [
         {
-            "utcDate": "2026-03-04",
+            "utcDate": "2026-03-04T20:45:00Z",
             "competition": {"name": "Taça de Portugal"},
             "homeTeam": {"shortName": "FC Porto", "id": PORTO_ID, "crest": "https://crests.football-data.org/503.png"},
             "awayTeam": {"shortName": "SL Benfica", "crest": "https://crests.football-data.org/1903.png"},
             "score": {"fullTime": {"home": 2, "away": 1}}
         },
         {
-            "utcDate": "2026-02-18",
+            "utcDate": "2026-02-18T20:00:00Z",
             "competition": {"name": "UEFA Europa League"},
             "homeTeam": {"shortName": "Stuttgart", "crest": "https://crests.football-data.org/10.png"},
             "awayTeam": {"shortName": "FC Porto", "id": PORTO_ID, "crest": "https://crests.football-data.org/503.png"},
@@ -116,35 +116,49 @@ elif aba == "Resultados":
         }
     ]
 
-    # 3. Juntamos tudo e ordenamos pela data
+    # 3. Juntar as duas listas
     todos_jogos = matches_api + jogos_extra
-    todos_jogos = sorted(todos_jogos, key=lambda x: x['utcDate'], reverse=True)
+
+    # 4. ORDENAÇÃO: Transformamos em lista ordenada (Recente para Antigo)
+    # O segredo está no [:10] para comparar apenas as datas e não as horas
+    todos_jogos.sort(key=lambda x: x['utcDate'][:10], reverse=True)
 
     if todos_jogos:
-        for m in todos_jogos[:15]: # Mostra os últimos 15
-            dt = m['utcDate'][:10]
-            comp = m['competition']['name']
+        # Mostra os 15 jogos mais recentes
+        for m in todos_jogos[:15]:
+            data_limpa = m['utcDate'][:10]
+            comp_nome = m['competition']['name']
             g_h = m['score']['fullTime']['home']
             g_a = m['score']['fullTime']['away']
             
-            # Lógica de cores (Verde para vitória do Porto)
+            # Lógica de cores baseada no resultado do Porto
+            # Se o ID do Home Team for o do Porto, comparamos g_h com g_a
             if m['homeTeam'].get('id') == PORTO_ID:
                 cor = "#28a745" if g_h > g_a else ("#dc3545" if g_h < g_a else "#ffffff")
             else:
                 cor = "#28a745" if g_a > g_h else ("#dc3545" if g_a < g_h else "#ffffff")
 
+            # Interface do Cartão
             st.markdown(f"""
-            <div style="border-left: 8px solid {cor}; background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; color: #001e3d; box-shadow: 2px 2px 5px rgba(0,0,0,0.05);">
-                <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #666; margin-bottom: 5px;">
-                    <span>🏆 {comp}</span> <span>📅 {dt}</span>
+            <div style="border-left: 8px solid {cor}; background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; color: #001e3d; box-shadow: 2px 2px 8px rgba(0,0,0,0.1);">
+                <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #666; margin-bottom: 8px; font-weight: bold;">
+                    <span>🏆 {comp_nome}</span> <span>📅 {data_limpa}</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div style="width: 35%; text-align: right; font-weight: bold;">{m['homeTeam']['shortName']} <img src="{m['homeTeam']['crest']}" width="25"></div>
-                    <div style="background: {cor}; color: {'white' if cor != '#ffffff' else '#001e3d'}; padding: 5px 15px; border-radius: 8px; font-weight: bold; border: 1px solid #ddd;">{g_h} - {g_a}</div>
-                    <div style="width: 35%; text-align: left; font-weight: bold;"><img src="{m['awayTeam']['crest']}" width="25"> {m['awayTeam']['shortName']}</div>
+                    <div style="width: 38%; text-align: right; font-weight: bold; font-size: 1em;">
+                        {m['homeTeam']['shortName']} <img src="{m['homeTeam']['crest']}" width="25" style="vertical-align: middle; margin-left: 5px;">
+                    </div>
+                    <div style="background: {cor}; color: {'white' if cor != '#ffffff' else '#001e3d'}; padding: 6px 14px; border-radius: 8px; font-weight: 800; font-size: 1.1em; border: 1px solid #eee;">
+                        {g_h} - {g_a}
+                    </div>
+                    <div style="width: 38%; text-align: left; font-weight: bold; font-size: 1em;">
+                        <img src="{m['awayTeam']['crest']}" width="25" style="vertical-align: middle; margin-right: 5px;"> {m['awayTeam']['shortName']}
+                    </div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
+    else:
+        st.info("A carregar resultados...")
                 
 # --- ABA: PLANTEL (Dividido por Posições) ---
 elif aba == "Plantel":
