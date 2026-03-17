@@ -207,25 +207,33 @@ elif aba == "Resultados":
         {"dt": "29/01/26", "cp": "UEFA Europa League 🇪🇺", "cs": "Porto", "lc": "https://tmssl.akamaized.net/images/wappen/head/720.png", "fr": "Rangers", "lf": "https://tmssl.akamaized.net/images/wappen/head/124.png", "res": "3 - 1", "cor": "#28a745"}
     ]
 
-for j in ultimos_jogos:
+# 1. Este bloco desenha os cartões dos resultados
+    for j in ultimos_jogos:
         card = f"""
-        <div style='background-color:white; border-radius:12px; padding:15px; margin-bottom:10px; border-left:8px solid {j['cor']}; color:#001e3d;'>
-            <b>{j['cp']}</b> - {j['dt']}<br>
-            {j['cs']} {j['res']} {j['fr']}
+        <div style='background-color:white; border-radius:12px; padding:15px; margin-bottom:10px; border-left:8px solid #00428c; color:#001e3d;'>
+            <div style='font-size:12px; color:gray;'>{j['cp']} - {j['dt']}</div>
+            <div style='font-weight:bold; font-size:16px;'>{j['cs']} {j['res']} {j['fr']}</div>
         </div>
         """
         st.write(card, unsafe_allow_html=True)
 
+# 2. O elif tem de estar fora do for para a aba mudar corretamente
 elif aba == "Estatísticas":
     st.markdown('<p class="main-title">📊 Classificação em Tempo Real</p>', unsafe_allow_html=True)
+    
     try:
+        # Puxa os dados da ESPN automaticamente
         url = "https://www.espn.com.pt/futebol/classificacao/_/liga/por.1"
         tabelas = pd.read_html(url)
         df_liga = pd.concat([tabelas[0], tabelas[1]], axis=1)
+        
+        # Seleciona as colunas certas e dá nomes bonitos
         df_liga = df_liga.iloc[:, [0, 1, 2, 3, 4, 7]] 
         df_liga.columns = ['Equipa', 'J', 'V', 'E', 'D', 'PTS']
-        
+
+        # Mostra a tabela que se atualiza sozinha
         st.dataframe(df_liga, use_container_width=True, hide_index=True)
-        st.caption("✅ Atualizado automaticamente via ESPN")
+        st.caption("✅ Dados atualizados automaticamente via ESPN")
+        
     except Exception as e:
-        st.error(f"Erro ao carregar: {e}")
+        st.error(f"Erro ao carregar dados: {e}")
