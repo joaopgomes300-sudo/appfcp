@@ -6,7 +6,7 @@ API_KEY = "39ef6a8b48ea4d0ea3a5157105ec0ddf"
 PORTO_ID = 503  # ID do FC Porto na Football-Data
 URL = f"https://api.football-data.org/v4/teams/{PORTO_ID}/matches?status=FINISHED"
 
-st.title("🔵 FC Porto - Resultados Recentes")
+st.title("https://upload.wikimedia.org/wikipedia/fr/8/89/Logo_FC_Porto.svg FC Porto - Resultados Recentes")
 
 headers = {"X-Auth-Token": API_KEY}
 response = requests.get(URL, headers=headers)
