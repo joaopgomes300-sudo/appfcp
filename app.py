@@ -136,26 +136,7 @@ elif aba == "Resultados":
 
     # (Aqui podes colar o código da Tabela da Liga que te enviei antes)
 
-# --- ABA 2: RESULTADOS ---
-elif aba == "Resultados":
-    st.title("⚽ Resultados e Marcadores")
-    # ... (teu código de resultados aqui)
 
-# --- ABA 3: PLANTEL ---
-elif aba == "Plantel":
-    st.title("👥 Squad Details")
-    # ... (teu código de plantel aqui)
-
-# --- ABA 4: CALENDÁRIO ---
-elif aba == "Calendário":
-    st.title("📅 Próximos Jogos")
-    # ... (teu código de calendário aqui)
-    # (Aqui podes colar o código da Tabela da Liga que te enviei antes)
-
-# --- ABA 2: RESULTADOS ---
-elif aba == "Resultados":
-    st.title("⚽ Resultados e Marcadores")
-    # ... (teu código de resultados aqui)
 
 # --- ABA 3: PLANTEL ---
 elif aba == "Plantel":
