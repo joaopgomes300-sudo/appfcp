@@ -64,14 +64,22 @@ elif aba == "Plantel":
         "Alberto Costa": 20,
         "Dominik Prpic": 21,
         "Martim Fernandes": 52,
-        "Otávio": 31,
+        "Francisco Moura": 74,
+        "Victor Froholdt": 8,
+        "Gabri Veiga": 10,
+        "Pablo Rosario": 13,
         "Alan Varela": 22,
-        "Nico González": 16,
+        "Seko Fofana": 42,
+        "Rodrigo Mora": 86,
+        "William Gomes": 7,
         "Pepê": 11,
-        "Galeno": 13,
         "Samu Omorodion": 9,
+        "Borja Sainz": 17,
+        "Luuk de Jong": 26,
+        "Terem Moffi": 29,
+        "Oskar Pietuszewski": 77,
         "Deniz Gül": 27,
-        "Rodrigo Mora": 86 # Exemplo
+         
     }
 
     # 2. Mapeamento para tradução e ORDENAÇÃO
