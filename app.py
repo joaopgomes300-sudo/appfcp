@@ -46,30 +46,65 @@ if aba == "Resultados":
             </div>
             """, unsafe_allow_html=True)
 
-# --- ABA: PLANTEL (Dados Reais da API) ---
+# --- ABA: PLANTEL (Com Correção Manual de Números) ---
 elif aba == "Plantel":
     st.title("👥 Squad Details")
+    
+    # 1. O teu dicionário manual. Podes adicionar todos os que faltarem aqui!
+    numeros_manuais = {
+        "Diogo Costa": 99,
+        "Cláudio Ramos": 14,
+        "Diogo Fernandes": 51,
+        "João Costa": 24,
+        "Thiago Silva": 3,
+        "Jakub Kiwior" 4,
+        "Jan Bednarek": 5,
+        "Zaidu Sanusi": 12,
+        "Nehuen Perez": 18, 
+        "Alberto Costa": 20,
+        "Dominik Prpic": 21,
+        "Martim Fernandes": 52,
+        "Otávio": 31,
+        "Alan Varela": 22,
+        "Nico González": 16,
+        "Pepê": 11,
+        "Galeno": 13,
+        "Samu Omorodion": 9,
+        "Deniz Gül": 27,
+        "Rodrigo Mora": 86
+    }
+
     data = get_data(f"teams/{PORTO_ID}")
     squad = data.get('squad', [])
     
-    # Removemos "on Pitch" porque a API grátis não dá esse valor real
     html = """
     <table class="fcp-table">
         <tr>
             <th style="width: 15%;">No.</th>
             <th style="text-align: left;">Name</th>
-            <th style="width: 20%;">Position</th>
+            <th style="width: 25%;">Position</th>
             <th style="width: 25%;">Nationality</th>
         </tr>"""
     
     for j in squad:
+        nome_jogador = j['name']
+        
+        # Lógica inteligente: 
+        # 1. Tenta o número da API. 
+        # 2. Se for None ou '-', tenta o teu dicionário manual.
+        # 3. Se não estiver em nenhum lado, mantém '-'
+        numero = j.get('jerseyNumber')
+        if not numero or numero == '-':
+            numero = numeros_manuais.get(nome_jogador, "-")
+
         html += f"""
         <tr>
-            <td><b>{j.get('jerseyNumber', '-')}</b></td>
-            <td style="text-align: left;">{j['name']}</td>
+            <td><b>{numero}</b></td>
+            <td style="text-align: left;">{nome_jogador}</td>
             <td>{j['position']}</td>
             <td>{j['nationality']}</td>
         </tr>"""
+    
     html += "</table>"
     st.markdown(html, unsafe_allow_html=True)
 
