@@ -148,7 +148,6 @@ elif aba == "Plantel":
             {"num": 10, "nome": "Gabri Veiga", "nac": "Spain", "band": "🇪🇸"},
             {"num": 13, "nome": "Pablo Rosario", "nac": "Netherlands", "band": "🇳🇱"},
             {"num": 22, "nome": "Alan Varela", "nac": "Argentina", "band": "🇦🇷"},
-            {"num": 16, "nome": "Nico González", "nac": "Spain", "band": "🇪🇸"},
             {"num": 31, "nome": "Otávio", "nac": "Brazil", "band": "🇧🇷"},
             {"num": 42, "nome": "Seko Fofana", "nac": "Ivory Coast", "band": "🇨🇮"},
             {"num": 86, "nome": "Rodrigo Mora", "nac": "Portugal", "band": "🇵🇹"},
