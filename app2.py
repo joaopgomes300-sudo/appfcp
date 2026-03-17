@@ -191,7 +191,7 @@ elif aba == "Plantel":
     st.markdown(html, unsafe_allow_html=True)
 
 elif aba == "Resultados":
-    st.markdown('<p class="main-title">⚽ Últimos Resultados</p>', unsafe_allow_html=True)
+    st.markdown('<p class="main-title">⚽ Últimos 10 Resultados</p>', unsafe_allow_html=True)
 
     ultimos_jogos = [
         {"dt": "15/03/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Porto", "lc": "https://crests.football-data.org/503.png", "fr": "Moreirense", "lf": "https://crests.football-data.org/5735.png", "res": "3 - 0", "cor": "#28a745"},
