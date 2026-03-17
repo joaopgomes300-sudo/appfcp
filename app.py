@@ -86,7 +86,7 @@ if aba == "Estatísticas":
             """
 
         # FORA DO FOR: Fecha a tabela e desenha
-         st.markdown(html_tabela + "</table>", unsafe_allow_html=True)
+        st.markdown(html_tabela + "</table>", unsafe_allow_html=True)
 
         
 # --- 2. ABA: RESULTADOS (AGORA 'ELIF') ---
