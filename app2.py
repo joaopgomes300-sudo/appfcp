@@ -234,26 +234,26 @@ elif aba == "Estatísticas":
     st.markdown('<p class="main-title">📊 Classificação Liga Portugal</p>', unsafe_allow_html=True)
     
     try:
-        # Puxamos os dados da ESPN (Scraping automático)
+        # Puxa os dados atualizados da ESPN
         url = "https://www.espn.com.pt/futebol/classificacao/_/liga/por.1"
-        tabelas = pd.read_html(url)
+        tabelas = pd.read_html(url) #
         
-        # Unimos os nomes (tabela 0) aos dados (tabela 1)
-        df_liga = pd.concat([tabelas[0], tabelas[1]], axis=1)
+        # Junta os nomes das equipas (tabela 0) com os números (tabela 1)
+        df_liga = pd.concat([tabelas[0], tabelas[1]], axis=1) #
         
-        # Limpamos para mostrar apenas o essencial
+        # Seleciona as colunas essenciais: Equipa, Jogos, Vitórias, Empates, Derrotas, Pontos
         df_liga = df_liga.iloc[:, [0, 1, 2, 3, 4, 7]] 
         df_liga.columns = ['Equipa', 'J', 'V', 'E', 'D', 'PTS']
 
-        # Em vez de HTML bruto, usamos o componente nativo do Streamlit que é limpo
+        # Mostra a tabela de forma limpa que o Streamlit entende
         st.dataframe(
             df_liga, 
             use_container_width=True, 
             hide_index=True
         )
-        st.caption("✅ Dados atualizados automaticamente via ESPN")
+        st.caption("✅ Classificação atualizada automaticamente via ESPN")
 
     except Exception as e:
-        st.error("Erro ao carregar tabela automática.")
-        # Backup manual caso o scraping falhe
-        st.table({"Equipa": ["Sporting CP", "FC Porto", "SL Benfica"], "PTS": [63, 61, 59]})
+        st.error("⚠️ Não foi possível carregar a tabela automática.")
+        # Se o site falhar, mostra pelo menos os 3 primeiros para não ficar vazio
+        st.table({"Equipa": ["Sporting CP", "FC Porto", "SL Benfica"], "PTS": ["-", "-", "-"]})
