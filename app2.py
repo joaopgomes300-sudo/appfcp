@@ -194,27 +194,26 @@ elif aba == "Resultados":
     st.markdown('<p class="main-title">⚽ Últimos 10 Resultados</p>', unsafe_allow_html=True)
 
     ultimos_jogos = [
-        {"dt": "15/03/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Porto", "lc": "https://crests.football-data.org/503.png", "fr": "Moreirense", "lf": "https://crests.football-data.org/5735.png", "res": "3 - 0", "cor": "#28a745"},
-        {"dt": "12/03/26", "cp": "UEFA Europa League 🇪🇺", "cs": "Stuttgart", "lc": "https://crests.football-data.org/10.png", "fr": "Porto", "lf": "https://crests.football-data.org/503.png", "res": "1 - 2", "cor": "#28a745"},
-        {"dt": "08/03/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Benfica", "lc": "https://crests.football-data.org/1903.png", "fr": "Porto", "lf": "https://crests.football-data.org/503.png", "res": "2 - 2", "cor": "#6c757d"},
-        {"dt": "03/03/26", "cp": "Taça de Portugal 🏆", "cs": "Sporting", "lc": "https://crests.football-data.org/498.png", "fr": "Porto", "lf": "https://crests.football-data.org/503.png", "res": "1 - 0", "cor": "#dc3545"},
-        {"dt": "27/02/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Porto", "lc": "https://crests.football-data.org/503.png", "fr": "Arouca", "lf": "https://crests.football-data.org/712.png", "res": "3 - 1", "cor": "#28a745"},
-        {"dt": "22/02/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Porto", "lc": "https://crests.football-data.org/503.png", "fr": "Rio Ave", "lf": "https://crests.football-data.org/496.png", "res": "1 - 0", "cor": "#28a745"},
-        {"dt": "15/02/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Nacional", "lc": "https://crests.football-data.org/5529.png", "fr": "Porto", "lf": "https://crests.football-data.org/503.png", "res": "0 - 1", "cor": "#28a745"},
-        {"dt": "09/02/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Porto", "lc": "https://crests.football-data.org/503.png", "fr": "Sporting", "lf": "https://crests.football-data.org/498.png", "res": "1 - 1", "cor": "#6c757d"},
-        {"dt": "02/02/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Casa Pia", "lc": "https://crests.football-data.org/5530.png", "fr": "Porto", "lf": "https://crests.football-data.org/503.png", "res": "2 - 1", "cor": "#dc3545"},
-        {"dt": "29/01/26", "cp": "UEFA Europa League 🇪🇺", "cs": "Porto", "lc": "https://crests.football-data.org/503.png", "fr": "Rangers", "lf": "https://crests.football-data.org/1053.png", "res": "3 - 1", "cor": "#28a745"}
+        {"dt": "15/03/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Porto", "lc": "https://tmssl.akamaized.net/images/wappen/head/720.png", "fr": "Moreirense", "lf": "https://tmssl.akamaized.net/images/wappen/head/979.png", "res": "3 - 0", "cor": "#28a745"},
+        {"dt": "12/03/26", "cp": "UEFA Europa League 🇪🇺", "cs": "Stuttgart", "lc": "https://tmssl.akamaized.net/images/wappen/head/79.png", "fr": "Porto", "lf": "https://tmssl.akamaized.net/images/wappen/head/720.png", "res": "1 - 2", "cor": "#28a745"},
+        {"dt": "08/03/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Benfica", "lc": "https://tmssl.akamaized.net/images/wappen/head/294.png", "fr": "Porto", "lf": "https://tmssl.akamaized.net/images/wappen/head/720.png", "res": "2 - 2", "cor": "#6c757d"},
+        {"dt": "03/03/26", "cp": "Taça de Portugal 🏆", "cs": "Sporting", "lc": "https://tmssl.akamaized.net/images/wappen/head/336.png", "fr": "Porto", "lf": "https://tmssl.akamaized.net/images/wappen/head/720.png", "res": "1 - 0", "cor": "#dc3545"},
+        {"dt": "27/02/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Porto", "lc": "https://tmssl.akamaized.net/images/wappen/head/720.png", "fr": "Arouca", "lf": "https://tmssl.akamaized.net/images/wappen/head/8024.png", "res": "3 - 1", "cor": "#28a745"},
+        {"dt": "22/02/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Porto", "lc": "https://tmssl.akamaized.net/images/wappen/head/720.png", "fr": "Rio Ave", "lf": "https://tmssl.akamaized.net/images/wappen/head/2425.png", "res": "1 - 0", "cor": "#28a745"},
+        {"dt": "15/02/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Nacional", "lc": "https://tmssl.akamaized.net/images/wappen/head/981.png", "fr": "Porto", "lf": "https://tmssl.akamaized.net/images/wappen/head/720.png", "res": "0 - 1", "cor": "#28a745"},
+        {"dt": "09/02/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Porto", "lc": "https://tmssl.akamaized.net/images/wappen/head/720.png", "fr": "Sporting", "lf": "https://tmssl.akamaized.net/images/wappen/head/336.png", "res": "1 - 1", "cor": "#6c757d"},
+        {"dt": "02/02/26", "cp": "Liga Portugal Betclic 🇵🇹", "cs": "Casa Pia", "lc": "https://tmssl.akamaized.net/images/wappen/head/3396.png", "fr": "Porto", "lf": "https://tmssl.akamaized.net/images/wappen/head/720.png", "res": "2 - 1", "cor": "#dc3545"},
+        {"dt": "29/01/26", "cp": "UEFA Europa League 🇪🇺", "cs": "Porto", "lc": "https://tmssl.akamaized.net/images/wappen/head/720.png", "fr": "Rangers", "lf": "https://tmssl.akamaized.net/images/wappen/head/124.png", "res": "3 - 1", "cor": "#28a745"}
     ]
 
     for j in ultimos_jogos:
-        # Montamos a string primeiro sem espaços estranhos no início
-        card_html = f"<div style='background-color: white; border-radius: 15px; padding: 18px; margin-bottom: 15px; border-left: 10px solid {j['cor']}; color: #001e3d; box-shadow: 0 4px 10px rgba(0,0,0,0.1);'>"
-        card_html += f"<div style='display: flex; justify-content: space-between; font-size: 0.8em; color: #777; margin-bottom: 8px; font-weight: bold;'><span>{j['cp']}</span><span>{j['dt']}</span></div>"
-        card_html += f"<div style='display: flex; justify-content: space-between; align-items: center;'>"
-        card_html += f"<div style='width: 38%; text-align: right; font-weight: bold;'>{j['cs']} <img src='{j['lc']}' width='25' style='vertical-align: middle; margin-left: 8px;'></div>"
-        card_html += f"<div style='background-color: {j['cor']}; color: white !important; padding: 6px 15px; border-radius: 8px; font-weight: 800; min-width: 70px; text-align: center;'>{j['res']}</div>"
-        card_html += f"<div style='width: 38%; text-align: left; font-weight: bold;'><img src='{j['lf']}' width='25' style='vertical-align: middle; margin-right: 8px;'> {j['fr']}</div>"
-        card_html += "</div></div>"
-        
-        # Agora desenhamos
-        st.write(card_html, unsafe_allow_html=True)
+        # Criamos o HTML numa linha contínua para evitar que o Streamlit pense que é código
+        card = f"""<div style="background-color: white; border-radius: 15px; padding: 18px; margin-bottom: 15px; border-left: 10px solid {j['cor']}; box-shadow: 0 4px 10px rgba(0,0,0,0.1); color: #001e3d;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #777; margin-bottom: 8px; font-weight: bold;"><span>{j['cp']}</span><span>{j['dt']}</span></div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="width: 38%; text-align: right; font-weight: bold;">{j['cs']} <img src="{j['lc']}" width="30" style="vertical-align: middle; margin-left: 8px;"></div>
+                <div style="background-color: {j['cor']}; color: white !important; padding: 6px 15px; border-radius: 8px; font-weight: 800; min-width: 70px; text-align: center;">{j['res']}</div>
+                <div style="width: 38%; text-align: left; font-weight: bold;"><img src="{j['lf']}" width="30" style="vertical-align: middle; margin-right: 8px;"> {j['fr']}</div>
+            </div>
+        </div>"""
+        st.markdown(card, unsafe_allow_html=True)
