@@ -51,31 +51,56 @@ if aba == "Resultados":
             </div>
             """, unsafe_allow_html=True)
 
-# --- ABA: PLANTEL (Com Tabela Detalhada) ---
+# --- ABA: PLANTEL (Com Alinhamento Centrado e Organizado) ---
 elif aba == "Plantel":
     st.title("👥 Squad Details")
     data = get_data(f"teams/{PORTO_ID}")
     squad = data.get('squad', [])
     
-    # Criar a tabela estilo profissional
+    # Tabela com CSS para centrar tudo (text-align: center)
     st.markdown("""
-    <table style="width:100%; font-size: 12px;">
-        <tr style="border-bottom: 1px solid #555;">
-            <th>No.</th><th>Name</th><th>Pos.</th><th>Contract</th><th>on Pitch</th>
+    <style>
+        .squad-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center; /* Centra o texto em todas as células */
+        }
+        .squad-table th {
+            background-color: #2c3e50;
+            padding: 12px;
+            border-bottom: 2px solid #555;
+        }
+        .squad-table td {
+            padding: 10px;
+            border-bottom: 1px solid #444;
+            vertical-align: middle;
+        }
+    </style>
+    <table class="squad-table">
+        <tr>
+            <th>No.</th>
+            <th style="text-align: left;">Name</th> <th>Pos.</th>
+            <th>Contract</th>
+            <th>on Pitch</th>
         </tr>
     """, unsafe_allow_html=True)
     
     for j in squad:
-        # Simulando os minutos "on pitch" e "contract" que viste
+        # Usamos o .get() para evitar erros se faltar algum dado
+        numero = j.get('jerseyNumber', '-')
+        nome = j.get('name', 'N/A')
+        posicao = j.get('position', 'N/A')[:3] # Abreviação (Goa, Def, Mid, Off)
+        
         st.markdown(f"""
-        <tr style="border-bottom: 1px dotted #444;">
-            <td>{j.get('jerseyNumber', '-')}</td>
-            <td><b>{j['name']}</b></td>
-            <td>{j['position'][:3]}</td>
+        <tr>
+            <td><b>{numero}</b></td>
+            <td style="text-align: left;">{nome}</td>
+            <td>{posicao}</td>
             <td>2024-2028</td>
             <td>1850 min</td>
         </tr>
         """, unsafe_allow_html=True)
+    
     st.markdown("</table>", unsafe_allow_html=True)
 
 # --- ABA: CALENDÁRIO (Com Logos das Competições) ---
