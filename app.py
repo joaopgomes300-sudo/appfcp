@@ -29,6 +29,76 @@ def get_data(endpoint):
 
 aba = st.sidebar.radio("Ir para:", ["Resultados", "Plantel", "Calendário"])
 
+# --- ABA NOVA: ESTATÍSTICAS E TABELA ---
+elif aba == "Estatísticas":
+    st.title("📊 Performance & Classificação")
+
+    # Bloco superior com os teus prints (Last 10, Progresso, etc.)
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("Resumo da Época")
+        st.markdown(f"""
+        <div style="background: #002d5c; padding: 20px; border-radius: 10px; border-left: 5px solid #ffd700;">
+            <p><b>Posição:</b> 1º Lugar (Liga Portugal)</p>
+            <p><b>Progresso:</b> 26 de 34 jogos realizados</p>
+            <div style="margin-top: 10px;">
+                <b>Últimos 10:</b><br>
+                <span style="color: #28a745;">W</span> <span style="color: #28a745;">W</span> 
+                <span style="color: #ffd700;">D</span> <span style="color: #28a745;">W</span> 
+                <span style="color: #28a745;">W</span> <span style="color: #28a745;">W</span> 
+                <span style="color: #ffd700;">D</span> <span style="color: #dc3545;">L</span> 
+                <span style="color: #28a745;">W</span> <span style="color: #28a745;">W</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col2:
+        st.subheader("Marcos Recentes")
+        st.info("✅ Última Vitória: 15 Março 2026 (3-0 vs Moreirense)")
+        st.error("❌ Última Derrota: 02 Fevereiro 2026 (2-1 vs Casa Pia)")
+
+    st.divider()
+
+    # Tabela da Liga (Vinda da API)
+    st.subheader("🏆 Tabela Liga Portugal")
+    standings_data = get_data("competitions/PPL/standings")
+    
+    if 'standings' in standings_data:
+        table = standings_data['standings'][0]['table']
+        
+        html_table = """
+        <table style="width:100%; border-collapse: collapse; background: white; color: #001e3d; border-radius: 10px; overflow: hidden;">
+            <tr style="background: #001e3d; color: white;">
+                <th style="padding: 10px;">Pos</th>
+                <th style="text-align: left;">Clube</th>
+                <th>J</th><th>V</th><th>E</th><th>D</th><th>Pts</th>
+            </tr>
+        """
+        
+        for team in table:
+            # Destaca o Porto na tabela
+            bg = "#e3f2fd" if team['team']['id'] == PORTO_ID else "transparent"
+            weight = "bold" if team['team']['id'] == PORTO_ID else "normal"
+            
+            html_table += f"""
+            <tr style="background: {bg}; border-bottom: 1px solid #ddd; font-weight: {weight};">
+                <td style="padding: 10px; text-align: center;">{team['position']}</td>
+                <td style="text-align: left;">
+                    <img src="{team['team']['crest']}" width="20"> {team['team']['shortName']}
+                </td>
+                <td style="text-align: center;">{team['playedGames']}</td>
+                <td style="text-align: center;">{team['won']}</td>
+                <td style="text-align: center;">{team['draw']}</td>
+                <td style="text-align: center;">{team['lost']}</td>
+                <td style="text-align: center; font-weight: bold;">{team['points']}</td>
+            </tr>
+            """
+        html_table += "</table>"
+        st.markdown(html_table, unsafe_allow_html=True)
+    else:
+        st.warning("Não foi possível carregar a tabela em tempo real. Tenta novamente mais tarde.")
+
 # --- ABA: RESULTADOS (Cores por Resultado + Logos + Competições) ---
 if aba == "Resultados":
     st.title("⚽ Resultados e Marcadores")
