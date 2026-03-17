@@ -212,3 +212,40 @@ for j in ultimos_jogos:
         
         # O unsafe_allow_html=True é que faz a magia
         st.write(card, unsafe_allow_html=True)
+
+
+import pandas as pd
+
+elif aba == "Estatísticas":
+    st.markdown('<p class="main-title">📊 Classificação Real-Time</p>', unsafe_allow_html=True)
+
+    try:
+        # URL da tabela (Exemplo da ESPN que é muito estável para scraping)
+        url = "https://www.espn.com.pt/futebol/classificacao/_/liga/por.1"
+        
+        # O pandas lê todas as tabelas da página
+        tabelas = pd.read_html(url)
+        
+        # Geralmente a tabela de classificação é a primeira [0] ou segunda [1]
+        # Na ESPN, eles separam os nomes dos clubes dos números, então juntamos:
+        df_nomes = tabelas[0] # Nomes dos clubes
+        df_stats = tabelas[1] # Pontos, Jogos, etc.
+        
+        df_final = pd.concat([df_nomes, df_stats], axis=1)
+
+        # Limpeza simples: Renomear colunas se necessário
+        df_final.columns = ['Clube', 'J', 'V', 'E', 'D', 'GM', 'GS', 'DG', 'Pts']
+
+        # Mostrar no Streamlit com estilo
+        st.dataframe(
+            df_final, 
+            use_container_width=True, 
+            hide_index=True
+        )
+        
+        st.success("Dados atualizados via ESPN")
+
+    except Exception as e:
+        st.error(f"Não foi possível carregar a tabela em tempo real. Erro: {e}")
+        st.info("A mostrar dados fixos de reserva...")
+        # Aqui podes colocar aquela tabela manual que fizemos antes como backup
