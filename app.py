@@ -2,26 +2,21 @@ import streamlit as st
 import requests
 from datetime import datetime
 
-# Configuração e Estilo
-st.set_page_config(page_title="Porto App Pro", layout="wide")
+# Configuração Base
+st.set_page_config(page_title="FC Porto Hub", layout="wide")
 
 st.markdown("""
     <style>
     .stApp { background-color: #001e3d; color: white; }
-    /* Estilo para as tabelas ficarem centradas e organizadas */
-    .fcp-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-        background-color: rgba(255,255,255,0.05);
-    }
-    .fcp-table th, .fcp-table td {
-        padding: 12px;
-        text-align: center; /* Centra tudo por padrão */
-        border-bottom: 1px solid #34495e;
+    .fcp-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .fcp-table th, .fcp-table td { 
+        padding: 12px; border-bottom: 1px solid #34495e; text-align: center; 
     }
     .fcp-table th { background-color: #002d5c; color: #ffd700; }
-    .text-left { text-align: left !important; }
+    .jogo-card {
+        background: white; padding: 15px; border-radius: 12px;
+        color: #001e3d; margin-bottom: 10px; border-left: 5px solid #00428c;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -32,79 +27,71 @@ PORTO_ID = 503
 def get_data(endpoint):
     return requests.get(f"https://api.football-data.org/v4/{endpoint}", headers=HEADERS).json()
 
-# Menu
 aba = st.sidebar.radio("Ir para:", ["Resultados", "Plantel", "Calendário"])
 
-# --- ABA: PLANTEL (Centrado e Alinhado) ---
-if aba == "Plantel":
+# --- ABA: RESULTADOS (Reposta e funcional) ---
+if aba == "Resultados":
+    st.title("⚽ Resultados Recentes")
+    data = get_data(f"teams/{PORTO_ID}/matches?status=FINISHED")
+    if 'matches' in data:
+        for jogo in reversed(data['matches'][-10:]):
+            st.markdown(f"""
+            <div class="jogo-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="width:30%; text-align:right;"><img src="{jogo['homeTeam']['crest']}" width="25"> {jogo['homeTeam']['shortName']}</span>
+                    <b style="font-size:1.2em;">{jogo['score']['fullTime']['home']} - {jogo['score']['fullTime']['away']}</b>
+                    <span style="width:30%; text-align:left;">{jogo['awayTeam']['shortName']} <img src="{jogo['awayTeam']['crest']}" width="25"></span>
+                </div>
+                <div style="text-align:center; font-size:10px; color:gray;">{jogo['utcDate'][:10]} | {jogo['competition']['code']}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+# --- ABA: PLANTEL (Dados Reais da API) ---
+elif aba == "Plantel":
     st.title("👥 Squad Details")
     data = get_data(f"teams/{PORTO_ID}")
     squad = data.get('squad', [])
     
+    # Removemos "on Pitch" porque a API grátis não dá esse valor real
     html = """
     <table class="fcp-table">
         <tr>
-            <th style="width: 10%;">No.</th>
-            <th class="text-left" style="width: 40%;">Name</th>
-            <th style="width: 15%;">Pos.</th>
-            <th style="width: 20%;">Contract</th>
-            <th style="width: 15%;">on Pitch</th>
+            <th style="width: 15%;">No.</th>
+            <th style="text-align: left;">Name</th>
+            <th style="width: 20%;">Position</th>
+            <th style="width: 25%;">Nationality</th>
         </tr>"""
     
     for j in squad:
         html += f"""
         <tr>
-            <td>{j.get('jerseyNumber', '-')}</td>
-            <td class="text-left"><b>{j['name']}</b></td>
-            <td>{j['position'][:3] if j['position'] else 'N/A'}</td>
-            <td>2024-2028</td>
-            <td>1850 min</td>
+            <td><b>{j.get('jerseyNumber', '-')}</b></td>
+            <td style="text-align: left;">{j['name']}</td>
+            <td>{j['position']}</td>
+            <td>{j['nationality']}</td>
         </tr>"""
     html += "</table>"
     st.markdown(html, unsafe_allow_html=True)
 
-# --- ABA: CALENDÁRIO (Com Símbolos e Horários) ---
+# --- ABA: CALENDÁRIO (Com Horários e Símbolos) ---
 elif aba == "Calendário":
     st.title("📅 Próximos Jogos")
     data = get_data(f"teams/{PORTO_ID}/matches?status=SCHEDULED")
-    
-    html = """
-    <table class="fcp-table">
-        <tr>
-            <th style="width: 15%;">Data/Hora</th>
-            <th style="width: 10%;">Comp.</th>
-            <th style="width: 75%;">Confronto</th>
-        </tr>"""
-    
-    for m in data.get('matches', [])[:12]:
-        # Formatar Data e Hora (UTC para Local simples)
-        dt = datetime.strptime(m['utcDate'], "%Y-%m-%dT%H:%M:%SZ")
-        data_hora = dt.strftime("%d/%m %H:%M")
+    if 'matches' in data:
+        html = "<table class='fcp-table'><tr><th>Data/Hora</th><th>Confronto</th></tr>"
+        for m in data['matches'][:10]:
+            dt = datetime.strptime(m['utcDate'], "%Y-%m-%dT%H:%M:%SZ")
+            html += f"""
+            <tr>
+                <td>{dt.strftime("%d/%m %H:%M")}</td>
+                <td>
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+                        {m['homeTeam']['shortName']} <img src="{m['homeTeam']['crest']}" width="20">
+                        <b>vs</b>
+                        <img src="{m['awayTeam']['crest']}" width="20"> {m['awayTeam']['shortName']}
+                    </div>
+                </td>
+            </tr>"""
+        html += "</table>"
+        st.markdown(html, unsafe_allow_html=True)
         
-        comp = m['competition']['code']
-        home_name = m['homeTeam']['shortName']
-        home_logo = m['homeTeam']['crest']
-        away_name = m['awayTeam']['shortName']
-        away_logo = m['awayTeam']['crest']
-        
-        html += f"""
-        <tr>
-            <td>{data_hora}</td>
-            <td><span style="background:#ffd700; color:black; padding:2px 5px; border-radius:3px; font-size:10px; font-weight:bold;">{comp}</span></td>
-            <td>
-                <div style="display: flex; justify-content: center; align-items: center; gap: 15px;">
-                    <span style="width: 120px; text-align: right;">{home_name}</span>
-                    <img src="{home_logo}" width="25">
-                    <span style="color: #ffd700; font-weight: bold;">vs</span>
-                    <img src="{away_logo}" width="25">
-                    <span style="width: 120px; text-align: left;">{away_name}</span>
-                </div>
-            </td>
-        </tr>"""
-    html += "</table>"
-    st.markdown(html, unsafe_allow_html=True)
-
-# Repete a lógica para Resultados (Opcional, mantém o que tinhas)
-elif aba == "Resultados":
-    st.title("⚽ Resultados Recentes")
-    # ... código de resultados que já tinhas ...
