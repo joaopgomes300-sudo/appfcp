@@ -29,17 +29,15 @@ def get_data(endpoint):
 
 aba = st.sidebar.radio("Ir para:", ["Resultados", "Plantel", "Calendário"])
 
-# --- ABA: RESULTADOS (Incluindo Taças e Europa) ---
-elif aba == "Resultados":
+# --- ABA: RESULTADOS (Corrigido para 'if') ---
+if aba == "Resultados":
     st.title("⚽ Match Results")    
-    # Vamos buscar os jogos terminados (FINISHED)
     data = get_data(f"teams/{PORTO_ID}/matches?status=FINISHED")
     matches = data.get('matches', [])
     
     if not matches:
         st.warning("Não foram encontrados resultados recentes.")
     else:
-        # Dicionário para traduzir os nomes das competições
         comps = {
             "PPL": "Liga Portugal 🇵🇹",
             "EL": "Europa League 🇪🇺",
@@ -47,7 +45,7 @@ elif aba == "Resultados":
             "TL": "Taça da Liga 🏆"
         }
 
-        for m in reversed(matches): # Os mais recentes primeiro
+        for m in reversed(matches):
             comp_nome = comps.get(m['competition']['code'], m['competition']['name'])
             data_jogo = m['utcDate'][:10]
             casa = m['homeTeam']['shortName']
@@ -55,7 +53,6 @@ elif aba == "Resultados":
             golo_casa = m['score']['fullTime']['home']
             golo_fora = m['score']['fullTime']['away']
             
-            # Estilo diferente se for Porto (para destacar a vitória/derrota)
             cor_resultado = "#ffd700" if (m['homeTeam']['id'] == PORTO_ID and golo_casa > golo_fora) or \
                                          (m['awayTeam']['id'] == PORTO_ID and golo_fora > golo_casa) else "#fff"
 
@@ -72,87 +69,85 @@ elif aba == "Resultados":
             </div>
             """, unsafe_allow_html=True)
 
-# --- ABA: PLANTEL (Lista Completa e Fiel aos teus Prints) ---
+# --- ABA: PLANTEL (Dividido por Posições) ---
 elif aba == "Plantel":
     st.title("👥 Squad Details")
     
-    # Esta lista contém TODOS os jogadores que tens no teu dicionário manual e nos prints
-    meu_plantel = [
-        # GUARDA-REDES
-        {"num": 99, "nome": "Diogo Costa", "pos": "Guarda-redes", "nac": "Portugal", "band": "🇵🇹"},
-        {"num": 14, "nome": "Cláudio Ramos", "pos": "Guarda-redes", "nac": "Portugal", "band": "🇵🇹"},
-        {"num": 51, "nome": "Diogo Fernandes", "pos": "Guarda-redes", "nac": "Portugal", "band": "🇵🇹"},
-        {"num": 24, "nome": "João Costa", "pos": "Guarda-redes", "nac": "Portugal", "band": "🇵🇹"},
-        
-        # DEFESAS
-        {"num": 3, "nome": "Thiago Silva", "pos": "Defesa", "nac": "Brazil", "band": "🇧🇷"},
-        {"num": 4, "nome": "Jakub Kiwior", "pos": "Defesa", "nac": "Poland", "band": "🇵🇱"},
-        {"num": 5, "nome": "Jan Bednarek", "pos": "Defesa", "nac": "Poland", "band": "🇵🇱"},
-        {"num": 12, "nome": "Zaidu Sanusi", "pos": "Defesa", "nac": "Nigeria", "band": "🇳🇬"},
-        {"num": 18, "nome": "Nehuen Perez", "pos": "Defesa", "nac": "Argentina", "band": "🇦🇷"},
-        {"num": 20, "nome": "Alberto Costa", "pos": "Defesa", "nac": "Portugal", "band": "🇵🇹"},
-        {"num": 21, "nome": "Dominik Prpic", "pos": "Defesa", "nac": "Croatia", "band": "🇭🇷"},
-        {"num": 52, "nome": "Martim Fernandes", "pos": "Defesa", "nac": "Portugal", "band": "🇵🇹"},
-        {"num": 74, "nome": "Francisco Moura", "pos": "Defesa", "nac": "Portugal", "band": "🇵🇹"},
-        {"num": 46, "nome": "Pedro Lima", "pos": "Defesa", "nac": "Brazil", "band": "🇧🇷"},
-        {"num": "-", "nome": "Gabriel Brás", "pos": "Defesa", "nac": "Portugal", "band": "🇵🇹"},
-        
-        # MÉDIOS
-        {"num": 8, "nome": "Victor Froholdt", "pos": "Médio", "nac": "Denmark", "band": "🇩🇰"},
-        {"num": 10, "nome": "Gabri Veiga", "pos": "Médio", "nac": "Spain", "band": "🇪🇸"},
-        {"num": 13, "phrase": "Pablo Rosario", "nome": "Pablo Rosario", "pos": "Médio", "nac": "Netherlands", "band": "🇳🇱"},
-        {"num": 22, "nome": "Alan Varela", "pos": "Médio", "nac": "Argentina", "band": "🇦🇷"},
-        {"num": 31, "nome": "Otávio", "pos": "Médio", "nac": "Brazil", "band": "🇧🇷"},
-        {"num": 42, "nome": "Seko Fofana", "pos": "Médio", "nac": "Ivory Coast", "band": "🇨🇮"},
-        {"num": 86, "nome": "Rodrigo Mora", "pos": "Médio", "nac": "Portugal", "band": "🇵🇹"},
-        {"num": "-", "nome": "André Oliveira", "pos": "Médio", "nac": "Portugal", "band": "🇵🇹"},
-        {"num": "-", "nome": "João Teixeira", "pos": "Médio", "nac": "Portugal", "band": "🇵🇹"},
-        
-        # AVANÇADOS
-        {"num": 11, "nome": "Pepê", "pos": "Avançado", "nac": "Brazil", "band": "🇧🇷"},
-        {"num": 9, "nome": "Samu Omorodion", "pos": "Avançado", "nac": "Spain", "band": "🇪🇸"},
-        {"num": 7, "nome": "William Gomes", "pos": "Avançado", "nac": "Brazil", "band": "🇧🇷"},
-        {"num": 17, "nome": "Borja Sainz", "pos": "Avançado", "nac": "Spain", "band": "🇪🇸"},
-        {"num": 26, "nome": "Luuk de Jong", "pos": "Avançado", "nac": "Netherlands", "band": "🇳🇱"},
-        {"num": 29, "nome": "Terem Moffi", "pos": "Avançado", "nac": "Nigeria", "band": "🇳🇬"},
-        {"num": 77, "nome": "Oskar Pietuszewski", "pos": "Avançado", "nac": "Poland", "band": "🇵🇱"},
-        {"num": 27, "nome": "Deniz Gül", "pos": "Avançado", "nac": "Sweden", "band": "🇸🇪"},
-        {"num": 72, "nome": "André Miranda", "pos": "Avançado", "nac": "Portugal", "band": "🇵🇹"},
-        {"num": "-", "nome": "Tiago Andrade", "pos": "Avançado", "nac": "Portugal", "band": "🇵🇹"}
-    ]
+    # Lista organizada por blocos para facilitar a gestão
+    meu_plantel = {
+        "GUARDA-REDES": [
+            {"num": 99, "nome": "Diogo Costa", "nac": "Portugal", "band": "🇵🇹"},
+            {"num": 14, "nome": "Cláudio Ramos", "nac": "Portugal", "band": "🇵🇹"},
+            {"num": 51, "nome": "Diogo Fernandes", "nac": "Portugal", "band": "🇵🇹"},
+            {"num": 24, "nome": "João Costa", "nac": "Portugal", "band": "🇵🇹"},
+        ],
+        "DEFESAS": [
+            {"num": 3, "nome": "Thiago Silva", "nac": "Brazil", "band": "🇧🇷"},
+            {"num": 4, "nome": "Jakub Kiwior", "nac": "Poland", "band": "🇵🇱"},
+            {"num": 5, "nome": "Jan Bednarek", "nac": "Poland", "band": "🇵🇱"},
+            {"num": 12, "nome": "Zaidu Sanusi", "nac": "Nigeria", "band": "🇳🇬"},
+            {"num": 18, "nome": "Nehuen Perez", "nac": "Argentina", "band": "🇦🇷"},
+            {"num": 20, "nome": "Alberto Costa", "nac": "Portugal", "band": "🇵🇹"},
+            {"num": 21, "nome": "Dominik Prpic", "nac": "Croatia", "band": "🇭🇷"},
+            {"num": 52, "nome": "Martim Fernandes", "nac": "Portugal", "band": "🇵🇹"},
+            {"num": 74, "nome": "Francisco Moura", "nac": "Portugal", "band": "🇵🇹"},
+            {"num": 46, "nome": "Pedro Lima", "nac": "Brazil", "band": "🇧🇷"},
+            {"num": "-", "nome": "Gabriel Brás", "nac": "Portugal", "band": "🇵🇹"},
+        ],
+        "MÉDIOS": [
+            {"num": 8, "nome": "Victor Froholdt", "nac": "Denmark", "band": "🇩🇰"},
+            {"num": 10, "nome": "Gabri Veiga", "nac": "Spain", "band": "🇪🇸"},
+            {"num": 13, "nome": "Pablo Rosario", "nac": "Netherlands", "band": "🇳🇱"},
+            {"num": 22, "nome": "Alan Varela", "nac": "Argentina", "band": "🇦🇷"},
+            {"num": 16, "nome": "Nico González", "nac": "Spain", "band": "🇪🇸"},
+            {"num": 31, "nome": "Otávio", "nac": "Brazil", "band": "🇧🇷"},
+            {"num": 42, "nome": "Seko Fofana", "nac": "Ivory Coast", "band": "🇨🇮"},
+            {"num": 86, "nome": "Rodrigo Mora", "nac": "Portugal", "band": "🇵🇹"},
+            {"num": "-", "nome": "André Oliveira", "nac": "Portugal", "band": "🇵🇹"},
+        ],
+        "AVANÇADOS": [
+            {"num": 11, "nome": "Pepê", "nac": "Brazil", "band": "🇧🇷"},
+            {"num": 9, "nome": "Samu Omorodion", "nac": "Spain", "band": "🇪🇸"},
+            {"num": 7, "nome": "William Gomes", "nac": "Brazil", "band": "🇧🇷"},
+            {"num": 17, "nome": "Borja Sainz", "nac": "Spain", "band": "🇪🇸"},
+            {"num": 26, "nome": "Luuk de Jong", "nac": "Netherlands", "band": "🇳🇱"},
+            {"num": 29, "nome": "Terem Moffi", "nac": "Nigeria", "band": "🇳🇬"},
+            {"num": 27, "nome": "Deniz Gül", "nac": "Sweden", "band": "🇸🇪"},
+            {"num": 72, "nome": "André Miranda", "nac": "Portugal", "band": "🇵🇹"},
+        ]
+    }
 
-    html = """
-    <table class="fcp-table">
-        <tr style="background-color: #002d5c; color: #ffd700;">
-            <th style="width: 10%;">No.</th>
-            <th style="text-align: left; width: 40%;">Nome</th>
-            <th style="width: 25%;">Posição</th>
-            <th style="width: 25%;">Nacionalidade</th>
-        </tr>"""
+    html = """<table class="fcp-table">"""
     
-    for j in meu_plantel:
+    for posicao, jogadores in meu_plantel.items():
+        # Linha de separação por posição
         html += f"""
-        <tr>
-            <td><b>{j['num']}</b></td>
-            <td style="text-align: left;">{j['nome']}</td>
-            <td>{j['pos']}</td>
-            <td>{j['band']} {j['nac']}</td>
+        <tr style="background-color: #00428c; color: white; font-weight: bold;">
+            <td colspan="4" style="text-align: left; padding-left: 15px;">{posicao}</td>
+        </tr>
+        <tr style="background-color: #002d5c; color: #ffd700; font-size: 0.8em;">
+            <th>No.</th><th style="text-align: left;">Nome</th><th>Nacionalidade</th><th>Info</th>
         </tr>"""
+        
+        for j in jogadores:
+            html += f"""
+            <tr>
+                <td><b>{j['num']}</b></td>
+                <td style="text-align: left;">{j['nome']}</td>
+                <td>{j['band']} {j['nac']}</td>
+                <td style="font-size: 0.8em; color: gray;">✔</td>
+            </tr>"""
     
     html += "</table>"
     st.markdown(html, unsafe_allow_html=True)
-# --- ABA: CALENDÁRIO (Próximos Jogos) ---
+
+# --- ABA: CALENDÁRIO ---
 elif aba == "Calendário":
     st.title("📅 Upcoming Matches")
-    
-    # Busca jogos agendados
     data = get_data(f"teams/{PORTO_ID}/matches?status=SCHEDULED")
     matches = data.get('matches', [])
 
-    # Se a API não devolver jogos da Taça ou Europa no plano free, 
-    # podemos injetar manualmente o próximo jogo importante:
     if not any(m['competition']['name'] == "UEFA Europa League" for m in matches):
-        # Exemplo de como adicionar um jogo manualmente que a API possa falhar:
         matches.append({
             "utcDate": "2026-03-19T20:00:00Z",
             "competition": {"name": "UEFA Europa League", "code": "EL"},
@@ -163,7 +158,6 @@ elif aba == "Calendário":
 
     for m in matches:
         comp = m['competition']['name']
-        # Tradução simples para o utilizador
         if "League" in comp: comp = "Europa League 🇪🇺"
         elif "Portugal" in comp: comp = "Liga Portugal 🇵🇹"
         
@@ -173,7 +167,7 @@ elif aba == "Calendário":
         st.markdown(f"""
         <div style="background-color: #f9f9f9; padding: 15px; border-radius: 10px; border-left: 5px solid #002d5c; margin-bottom: 10px;">
             <b style="color: #002d5c;">{comp}</b><br>
-            <span style="font-size: 1.1em;">{m['homeTeam']['shortName']} vs {m['awayTeam']['shortName']}</span><br>
-            <small>📅 {data_f} às {hora_f} (UTC)</small>
+            <span style="font-size: 1.1em; color: black;">{m['homeTeam']['shortName']} vs {m['awayTeam']['shortName']}</span><br>
+            <small style="color: black;">📅 {data_f} às {hora_f} (UTC)</small>
         </div>
         """, unsafe_allow_html=True)
