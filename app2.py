@@ -217,35 +217,36 @@ for j in ultimos_jogos:
 import pandas as pd
 
 elif aba == "Estatísticas":
-    st.markdown('<p class="main-title">📊 Classificação Real-Time</p>', unsafe_allow_html=True)
+    st.markdown('<p class="main-title">📊 Classificação Liga Portugal</p>', unsafe_allow_html=True)
 
     try:
-        # URL da tabela (Exemplo da ESPN que é muito estável para scraping)
+        # Link estável para scraping
         url = "https://www.espn.com.pt/futebol/classificacao/_/liga/por.1"
         
-        # O pandas lê todas as tabelas da página
+        # Lemos as tabelas do site
         tabelas = pd.read_html(url)
         
-        # Geralmente a tabela de classificação é a primeira [0] ou segunda [1]
-        # Na ESPN, eles separam os nomes dos clubes dos números, então juntamos:
-        df_nomes = tabelas[0] # Nomes dos clubes
-        df_stats = tabelas[1] # Pontos, Jogos, etc.
+        # A ESPN separa nomes de equipas (tabela 0) dos dados (tabela 1)
+        df_nomes = tabelas[0]
+        df_stats = tabelas[1]
         
-        df_final = pd.concat([df_nomes, df_stats], axis=1)
+        # Juntamos as duas partes
+        df_liga = pd.concat([df_nomes, df_stats], axis=1)
+        
+        # Ajustamos os nomes das colunas para ficar limpo
+        df_liga.columns = ['Equipa', 'J', 'V', 'E', 'D', 'GM', 'GS', 'DG', 'PTS']
 
-        # Limpeza simples: Renomear colunas se necessário
-        df_final.columns = ['Clube', 'J', 'V', 'E', 'D', 'GM', 'GS', 'DG', 'Pts']
+        # Estilização: Destacar o Porto
+        def destacar_porto(row):
+            return ['background-color: #e6f0ff' if 'Porto' in str(row.Equipa) else '' for _ in row]
 
-        # Mostrar no Streamlit com estilo
         st.dataframe(
-            df_final, 
-            use_container_width=True, 
+            df_liga.style.apply(destacar_porto, axis=1),
+            use_container_width=True,
             hide_index=True
         )
-        
-        st.success("Dados atualizados via ESPN")
+        st.caption("Dados atualizados automaticamente via ESPN")
 
     except Exception as e:
-        st.error(f"Não foi possível carregar a tabela em tempo real. Erro: {e}")
-        st.info("A mostrar dados fixos de reserva...")
-        # Aqui podes colocar aquela tabela manual que fizemos antes como backup
+        st.error("Erro ao carregar tabela em tempo real.")
+        st.info("Verifica se a biblioteca 'lxml' está instalada: pip install lxml")
