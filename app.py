@@ -29,20 +29,47 @@ def get_data(endpoint):
 
 aba = st.sidebar.radio("Ir para:", ["Resultados", "Plantel", "Calendário"])
 
-# --- ABA: RESULTADOS (Reposta e funcional) ---
-if aba == "Resultados":
-    st.title("⚽ Resultados Recentes")
+# --- ABA: RESULTADOS (Incluindo Taças e Europa) ---
+elif aba == "Resultados":
+    st.title("⚽ Match Results")
+    
+    # Vamos buscar os jogos terminados (FINISHED)
     data = get_data(f"teams/{PORTO_ID}/matches?status=FINISHED")
-    if 'matches' in data:
-        for jogo in reversed(data['matches'][-10:]):
+    matches = data.get('matches', [])
+    
+    if not matches:
+        st.warning("Não foram encontrados resultados recentes.")
+    else:
+        # Dicionário para traduzir os nomes das competições
+        comps = {
+            "PPL": "Liga Portugal 🇵🇹",
+            "EL": "Europa League 🇪🇺",
+            "TP": "Taça de Portugal 🏆",
+            "TL": "Taça da Liga 🏆"
+        }
+
+        for m in reversed(matches): # Os mais recentes primeiro
+            comp_nome = comps.get(m['competition']['code'], m['competition']['name'])
+            data_jogo = m['utcDate'][:10]
+            casa = m['homeTeam']['shortName']
+            fora = m['awayTeam']['shortName']
+            golo_casa = m['score']['fullTime']['home']
+            golo_fora = m['score']['fullTime']['away']
+            
+            # Estilo diferente se for Porto (para destacar a vitória/derrota)
+            cor_resultado = "#ffd700" if (m['homeTeam']['id'] == PORTO_ID and golo_casa > golo_fora) or \
+                                         (m['awayTeam']['id'] == PORTO_ID and golo_fora > golo_casa) else "#fff"
+
             st.markdown(f"""
-            <div class="jogo-card">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="width:30%; text-align:right;"><img src="{jogo['homeTeam']['crest']}" width="25"> {jogo['homeTeam']['shortName']}</span>
-                    <b style="font-size:1.2em;">{jogo['score']['fullTime']['home']} - {jogo['score']['fullTime']['away']}</b>
-                    <span style="width:30%; text-align:left;">{jogo['awayTeam']['shortName']} <img src="{jogo['awayTeam']['crest']}" width="25"></span>
+            <div style="border: 1px solid #ccc; border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+                <small style="color: gray;">{comp_nome} • {data_jogo}</small><br>
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 1.2em;">
+                    <span style="width: 40%; text-align: right;">{casa}</span>
+                    <span style="background: #002d5c; color: {cor_resultado}; padding: 5px 15px; border-radius: 5px; font-weight: bold;">
+                        {golo_casa} - {golo_fora}
+                    </span>
+                    <span style="width: 40%; text-align: left;">{fora}</span>
                 </div>
-                <div style="text-align:center; font-size:10px; color:gray;">{jogo['utcDate'][:10]} | {jogo['competition']['code']}</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -115,25 +142,39 @@ elif aba == "Plantel":
     
     html += "</table>"
     st.markdown(html, unsafe_allow_html=True)
-# --- ABA: CALENDÁRIO (Com Horários e Símbolos) ---
+# --- ABA: CALENDÁRIO (Próximos Jogos) ---
 elif aba == "Calendário":
-    st.title("📅 Próximos Jogos")
+    st.title("📅 Upcoming Matches")
+    
+    # Busca jogos agendados
     data = get_data(f"teams/{PORTO_ID}/matches?status=SCHEDULED")
-    if 'matches' in data:
-        html = "<table class='fcp-table'><tr><th>Data/Hora</th><th>Confronto</th></tr>"
-        for m in data['matches'][:10]:
-            dt = datetime.strptime(m['utcDate'], "%Y-%m-%dT%H:%M:%SZ")
-            html += f"""
-            <tr>
-                <td>{dt.strftime("%d/%m %H:%M")}</td>
-                <td>
-                    <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-                        {m['homeTeam']['shortName']} <img src="{m['homeTeam']['crest']}" width="20">
-                        <b>vs</b>
-                        <img src="{m['awayTeam']['crest']}" width="20"> {m['awayTeam']['shortName']}
-                    </div>
-                </td>
-            </tr>"""
-        html += "</table>"
-        st.markdown(html, unsafe_allow_html=True)
+    matches = data.get('matches', [])
+
+    # Se a API não devolver jogos da Taça ou Europa no plano free, 
+    # podemos injetar manualmente o próximo jogo importante:
+    if not any(m['competition']['name'] == "UEFA Europa League" for m in matches):
+        # Exemplo de como adicionar um jogo manualmente que a API possa falhar:
+        matches.append({
+            "utcDate": "2026-03-19T20:00:00Z",
+            "competition": {"name": "UEFA Europa League", "code": "EL"},
+            "homeTeam": {"shortName": "FC Porto"},
+            "awayTeam": {"shortName": "VfB Stuttgart"},
+            "status": "SCHEDULED"
+        })
+
+    for m in matches:
+        comp = m['competition']['name']
+        # Tradução simples para o utilizador
+        if "League" in comp: comp = "Europa League 🇪🇺"
+        elif "Portugal" in comp: comp = "Liga Portugal 🇵🇹"
         
+        data_f = m['utcDate'][:10]
+        hora_f = m['utcDate'][11:16]
+        
+        st.markdown(f"""
+        <div style="background-color: #f9f9f9; padding: 15px; border-radius: 10px; border-left: 5px solid #002d5c; margin-bottom: 10px;">
+            <b style="color: #002d5c;">{comp}</b><br>
+            <span style="font-size: 1.1em;">{m['homeTeam']['shortName']} vs {m['awayTeam']['shortName']}</span><br>
+            <small>📅 {data_f} às {hora_f} (UTC)</small>
+        </div>
+        """, unsafe_allow_html=True)
