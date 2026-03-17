@@ -214,36 +214,36 @@ for j in ultimos_jogos:
         # O unsafe_allow_html=True é que faz a magia
         st.write(card, unsafe_allow_html=True)
 
+st.write(card, unsafe_allow_html=True)
+
 elif aba == "Estatísticas":
     st.markdown('<p class="main-title">📊 Classificação em Tempo Real</p>', unsafe_allow_html=True)
 
     try:
-        # Este link da ESPN é o que permite a atualização automática
+        # Puxa os dados automaticamente do site
         url = "https://www.espn.com.pt/futebol/classificacao/_/liga/por.1"
-        tabelas = pd.read_html(url) # O pandas lê o site sozinho
+        tabelas = pd.read_html(url)
         
-        # Junta os nomes das equipas com os pontos
         df_nomes = tabelas[0]
         df_stats = tabelas[1]
         df_liga = pd.concat([df_nomes, df_stats], axis=1)
 
-        # Limpa para mostrar só o que interessa
+        # Limpa as colunas (Equipa, Jogos, Vitórias, Empates, Derrotas, Pontos)
         df_liga = df_liga.iloc[:, [0, 1, 2, 3, 4, 7]] 
         df_liga.columns = ['Equipa', 'J', 'V', 'E', 'D', 'PTS']
 
-        # Função para pintar a linha do Porto de Azul claro
+        # Função para destacar o Porto
         def destacar_porto(val):
             color = '#e6f0ff' if 'Porto' in str(val) else ''
             return f'background-color: {color}'
 
-        # Desenha a tabela automática no teu site
+        # Mostra a tabela que se atualiza sozinha
         st.dataframe(
             df_liga.style.applymap(destacar_porto, subset=['Equipa']),
             use_container_width=True,
             hide_index=True
         )
-        st.caption("✅ Classificação atualizada automaticamente via ESPN")
+        st.caption("✅ Dados atualizados automaticamente via ESPN")
 
     except Exception as e:
-        # Se o site da ESPN estiver em baixo, ele avisa-te aqui
-        st.error("Erro ao ligar ao servidor de resultados.")
+        st.error("Erro ao carregar dados automáticos. Verifica se tens 'lxml' instalado.")
