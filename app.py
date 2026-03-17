@@ -80,7 +80,6 @@ elif aba == "Plantel":
         {"num": 31, "nome": "Otávio", "pos": "Médio", "nac": "Brazil", "band": "🇧🇷"},
         {"num": 42, "nome": "Seko Fofana", "pos": "Médio", "nac": "Ivory Coast", "band": "🇨🇮"},
         {"num": 86, "nome": "Rodrigo Mora", "pos": "Médio", "nac": "Portugal", "band": "🇵🇹"},
-        {"num": "7", "nome": "William Gomes", "pos": "Médio", "nac": "Brazil", "band": "🇧🇷"},
         {"num": "-", "nome": "André Oliveira", "pos": "Médio", "nac": "Portugal", "band": "🇵🇹"},
         {"num": "-", "nome": "João Teixeira", "pos": "Médio", "nac": "Portugal", "band": "🇵🇹"},
         
