@@ -138,7 +138,13 @@ elif aba == "Resultados":
                 <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #666; margin-bottom: 5px;">
                     <span>🏆 {comp}</span> <span>📅 {dt}</span>
                 </div>
-                <div style
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="width: 35%; text-align: right; font-weight: bold;">{m['homeTeam']['shortName']} <img src="{m['homeTeam']['crest']}" width="25"></div>
+                    <div style="background: {cor}; color: {'white' if cor != '#ffffff' else '#001e3d'}; padding: 5px 15px; border-radius: 8px; font-weight: bold; border: 1px solid #ddd;">{g_h} - {g_a}</div>
+                    <div style="width: 35%; text-align: left; font-weight: bold;"><img src="{m['awayTeam']['crest']}" width="25"> {m['awayTeam']['shortName']}</div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
                 
 # --- ABA: PLANTEL (Dividido por Posições) ---
 elif aba == "Plantel":
