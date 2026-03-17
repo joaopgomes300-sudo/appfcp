@@ -75,9 +75,54 @@ if aba == "Estatísticas":
     st.caption("Última atualização: 17 de Março de 2026")
 
 elif aba == "Plantel":
-    st.title("👥 Squad Details")
+    st.markdown('<p class="main-title">👥 Squad Details</p>', unsafe_allow_html=True)
     
-    # Lista organizada por blocos para facilitar a gestão
+    # CSS para tornar a tabela profissional e legível
+    st.markdown("""
+        <style>
+            .squad-container {
+                background-color: white;
+                border-radius: 15px;
+                overflow: hidden;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                margin-bottom: 20px;
+            }
+            .fcp-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-family: 'sans-serif';
+            }
+            /* Cor do texto de todas as células para garantir visibilidade */
+            .fcp-table td {
+                padding: 12px 15px;
+                border-bottom: 1px solid #eee;
+                color: #001e3d !important; /* Azul escuro */
+                text-align: center;
+                font-size: 0.95em;
+            }
+            /* Cabeçalhos de posição (Guarda-redes, etc) */
+            .pos-header {
+                background-color: #001e3d !important;
+                color: white !important;
+                font-weight: bold;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+            /* Sub-cabeçalho (No, Nome, etc) */
+            .sub-header th {
+                background-color: #002d5c;
+                color: #ffd700 !important; /* Dourado */
+                padding: 8px;
+                font-size: 0.8em;
+                text-transform: uppercase;
+            }
+            /* Efeito ao passar o rato */
+            .fcp-table tr:hover {
+                background-color: #f8f9fa;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+
     meu_plantel = {
         "GUARDA-REDES": [
             {"num": 99, "nome": "Diogo Costa", "nac": "Portugal", "band": "🇵🇹"},
@@ -121,26 +166,27 @@ elif aba == "Plantel":
         ]
     }
 
-    html = """<table class="fcp-table">"""
+    # Início da Tabela com Wrapper para bordas arredondadas
+    html = """<div class="squad-container"><table class="fcp-table">"""
     
     for posicao, jogadores in meu_plantel.items():
-        # Linha de separação por posição
+        # Cabeçalho da Categoria
         html += f"""
-        <tr style="background-color: #00428c; color: white; font-weight: bold;">
+        <tr class="pos-header">
             <td colspan="4" style="text-align: left; padding-left: 15px;">{posicao}</td>
         </tr>
-        <tr style="background-color: #002d5c; color: #ffd700; font-size: 0.8em;">
-            <th>No.</th><th style="text-align: left;">Nome</th><th>Nacionalidade</th><th>Info</th>
+        <tr class="sub-header">
+            <th>No.</th><th style="text-align: left;">Nome</th><th>Nacionalidade</th><th>Status</th>
         </tr>"""
         
         for j in jogadores:
             html += f"""
             <tr>
-                <td><b>{j['num']}</b></td>
-                <td style="text-align: left;">{j['nome']}</td>
-                <td>{j['band']} {j['nac']}</td>
-                <td style="font-size: 0.8em; color: gray;">✔</td>
+                <td style="font-weight: bold; color: #00428c;">{j['num']}</td>
+                <td style="text-align: left; font-weight: 500;">{j['nome']}</td>
+                <td>{j['band']} <span style="font-size: 0.9em; color: #555;">{j['nac']}</span></td>
+                <td style="color: #28a745 !important; font-weight: bold;">✔</td>
             </tr>"""
     
-    html += "</table>"
+    html += "</table></div>"
     st.markdown(html, unsafe_allow_html=True)
