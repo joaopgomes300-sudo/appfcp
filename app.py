@@ -34,50 +34,54 @@ aba = st.sidebar.radio("Ir para:", ["Estatísticas", "Resultados", "Plantel", "C
 
 # --- 1. ABA: ESTATÍSTICAS (O PRIMEIRO É SEMPRE 'IF') ---
 if aba == "Estatísticas":
+    st.title("📊 Performance & Classificação")
+
+    # Bloco de resumo (o que já tinhas)
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("""
+        <div style="background: #002d5c; padding: 20px; border-radius: 10px; border-left: 5px solid #ffd700; color: white;">
+            <p><b>Posição:</b> 1º Lugar (Liga Portugal)</p>
+            <p><b>Progresso:</b> 26 de 34 jogos realizados</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.success("✅ Vitória: 15 Mar 2026 (3-0 vs Moreirense)")
+
+    st.divider()
+
+    # --- AQUI ESTÁ A TABELA DA LIGA ---
     st.subheader("🏆 Classificação Liga Portugal")
+    data_standings = get_data("competitions/PPL/standings")
     
-    # Puxa os dados da API
-    st_data = get_data("competitions/PPL/standings")
-    
-    if 'standings' in st_data:
-        tabela = st_data['standings'][0]['table']
-        
-        # Desenha a tabela em HTML para ser mais bonita e legível
-        html_tabela = """
+    if 'standings' in data_standings:
+        table = data_standings['standings'][0]['table']
+        html_table = """
         <table style="width:100%; border-collapse: collapse; background: white; color: #001e3d; border-radius: 10px; overflow: hidden;">
             <tr style="background: #001e3d; color: white;">
                 <th style="padding: 12px; text-align: center;">Pos</th>
                 <th style="text-align: left; padding: 12px;">Clube</th>
                 <th style="padding: 12px; text-align: center;">J</th>
                 <th style="padding: 12px; text-align: center;">V</th>
-                <th style="padding: 12px; text-align: center;">E</th>
-                <th style="padding: 12px; text-align: center;">D</th>
                 <th style="padding: 12px; text-align: center;">Pts</th>
             </tr>
         """
-        
-        for time in tabela:
-            # Destaca o Porto com uma cor diferente
-            bg_color = "#e3f2fd" if time['team']['id'] == PORTO_ID else "white"
-            
-            html_tabela += f"""
-            <tr style="background-color: {bg_color}; border-bottom: 1px solid #eee;">
-                <td style="padding: 10px; text-align: center; font-weight: bold;">{time['position']}</td>
+        for team in table:
+            bg = "#e3f2fd" if team['team']['id'] == PORTO_ID else "white"
+            html_table += f"""
+            <tr style="background-color: {bg}; border-bottom: 1px solid #eee;">
+                <td style="padding: 10px; text-align: center; font-weight: bold;">{team['position']}</td>
                 <td style="padding: 10px; text-align: left;">
-                    <img src="{time['team']['crest']}" width="20" style="vertical-align: middle; margin-right: 8px;">
-                    {time['team']['shortName']}
+                    <img src="{team['team']['crest']}" width="20" style="vertical-align: middle; margin-right: 8px;">
+                    {team['team']['shortName']}
                 </td>
-                <td style="padding: 10px; text-align: center;">{time['playedGames']}</td>
-                <td style="padding: 10px; text-align: center;">{time['won']}</td>
-                <td style="padding: 10px; text-align: center;">{time['draw']}</td>
-                <td style="padding: 10px; text-align: center;">{time['lost']}</td>
-                <td style="padding: 10px; text-align: center; font-weight: bold;">{time['points']}</td>
+                <td style="padding: 10px; text-align: center;">{team['playedGames']}</td>
+                <td style="padding: 10px; text-align: center;">{team['won']}</td>
+                <td style="padding: 10px; text-align: center; font-weight: bold;">{team['points']}</td>
             </tr>
             """
-        
-        st.markdown(html_tabela + "</table>", unsafe_allow_html=True)
-    else:
-        st.error("Não foi possível carregar a tabela. Verifica a tua ligação ou API Key.")
+        st.markdown(html_table + "</table>", unsafe_allow_html=True)
 
 # --- 2. ABA: RESULTADOS (AGORA 'ELIF') ---
 elif aba == "Resultados":
