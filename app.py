@@ -57,7 +57,7 @@ elif aba == "Plantel":
         "Diogo Fernandes": 51,
         "João Costa": 24,
         "Thiago Silva": 3,
-        "Jakub Kiwior" 4,
+        "Jakub Kiwior":4,
         "Jan Bednarek": 5,
         "Zaidu Sanusi": 12,
         "Nehuen Perez": 18, 
