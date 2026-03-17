@@ -32,11 +32,10 @@ aba = st.sidebar.radio("Ir para:", ["Estatísticas", "Resultados", "Plantel", "C
 # --- CONFIGURAÇÃO DO MENU (Garante que a ordem aqui coincide com o código abaixo) ---
 aba = st.sidebar.radio("Ir para:", ["Estatísticas", "Resultados", "Plantel", "Calendário"])
 
-# --- 1. ABA: ESTATÍSTICAS (TEM DE SER 'IF') ---
+# --- 1. ABA: ESTATÍSTICAS (O PRIMEIRO É SEMPRE 'IF') ---
 if aba == "Estatísticas":
     st.title("📊 Performance & Classificação")
 
-    # Resumo visual dos teus prints
     col1, col2 = st.columns(2)
     with col1:
         st.markdown("""
@@ -60,18 +59,16 @@ if aba == "Estatísticas":
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Tabela da Liga Portugal
+    # TABELA DA LIGA
     st.subheader("🏆 Classificação Liga Portugal")
     data_standings = get_data("competitions/PPL/standings")
     
     if 'standings' in data_standings:
         tabela = data_standings['standings'][0]['table']
-        html_tabela = """
-        <table style="width:100%; border-collapse: collapse; background: white; color: #001e3d; border-radius: 10px; overflow: hidden;">
+        html_tabela = """<table style="width:100%; border-collapse: collapse; background: white; color: #001e3d; border-radius: 10px; overflow: hidden;">
             <tr style="background: #001e3d; color: white;">
                 <th style="padding: 12px;">Pos</th><th style="text-align: left;">Clube</th><th>J</th><th>V</th><th>E</th><th>D</th><th>Pts</th>
             </tr>"""
-        
         for time in tabela:
             bg = "#e3f2fd" if time['team']['id'] == PORTO_ID else "white"
             html_tabela += f"""
