@@ -207,13 +207,22 @@ elif aba == "Resultados":
     ]
 
     for j in ultimos_jogos:
-        # Criamos o HTML numa linha contínua para evitar que o Streamlit pense que é código
-        card = f"""<div style="background-color: white; border-radius: 15px; padding: 18px; margin-bottom: 15px; border-left: 10px solid {j['cor']}; box-shadow: 0 4px 10px rgba(0,0,0,0.1); color: #001e3d;">
-            <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #777; margin-bottom: 8px; font-weight: bold;"><span>{j['cp']}</span><span>{j['dt']}</span></div>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="width: 38%; text-align: right; font-weight: bold;">{j['cs']} <img src="{j['lc']}" width="30" style="vertical-align: middle; margin-left: 8px;"></div>
-                <div style="background-color: {j['cor']}; color: white !important; padding: 6px 15px; border-radius: 8px; font-weight: 800; min-width: 70px; text-align: center;">{j['res']}</div>
-                <div style="width: 38%; text-align: left; font-weight: bold;"><img src="{j['lf']}" width="30" style="vertical-align: middle; margin-right: 8px;"> {j['fr']}</div>
+        # HTML estruturado para evitar que o Streamlit mostre o código
+        st.markdown(f"""
+        <div style="background-color: white; border-radius: 10px; padding: 15px; margin-bottom: 10px; border-left: 8px solid {j['cor']}; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: gray; margin-bottom: 5px;">
+                <b>{j['cp']}</b> <span>{j['dt']}</span>
             </div>
-        </div>"""
-        st.markdown(card, unsafe_allow_html=True)
+            <div style="display: flex; justify-content: space-between; align-items: center; color: #001e3d;">
+                <div style="width: 40%; text-align: right; font-weight: bold;">
+                    {j['cs']} <img src="{j['lc']}" width="25" style="vertical-align: middle;">
+                </div>
+                <div style="background-color: {j['cor']}; color: white; padding: 4px 10px; border-radius: 5px; font-weight: bold;">
+                    {j['res']}
+                </div>
+                <div style="width: 40%; text-align: left; font-weight: bold;">
+                    <img src="{j['lf']}" width="25" style="vertical-align: middle;"> {j['fr']}
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
