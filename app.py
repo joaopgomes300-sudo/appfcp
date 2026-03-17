@@ -29,13 +29,16 @@ def get_data(endpoint):
 
 aba = st.sidebar.radio("Ir para:", ["Estatísticas", "Resultados", "Plantel", "Calendário"])
 
-# --- ABA 1: ESTATÍSTICAS (O primeiro tem de ser IF) ---
+# --- CONFIGURAÇÃO DO MENU (Garante que a ordem aqui coincide com o código abaixo) ---
+aba = st.sidebar.radio("Ir para:", ["Estatísticas", "Resultados", "Plantel", "Calendário"])
+
+# --- 1. ABA: ESTATÍSTICAS (TEM DE SER 'IF') ---
 if aba == "Estatísticas":
     st.title("📊 Performance & Classificação")
-    
+
+    # Resumo visual dos teus prints
     col1, col2 = st.columns(2)
     with col1:
-        st.subheader("Resumo da Época")
         st.markdown("""
         <div style="background: #002d5c; padding: 20px; border-radius: 10px; border-left: 5px solid #ffd700; color: white;">
             <p><b>Posição:</b> 1º Lugar (Liga Portugal)</p>
@@ -52,9 +55,81 @@ if aba == "Estatísticas":
         """, unsafe_allow_html=True)
     
     with col2:
-        st.subheader("Marcos Recentes")
-        st.info("✅ Vitória: 15 Mar 2026 (3-0 vs Moreirense)")
+        st.success("✅ Vitória: 15 Mar 2026 (3-0 vs Moreirense)")
         st.error("❌ Derrota: 02 Fev 2026 (2-1 vs Casa Pia)")
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Tabela da Liga Portugal
+    st.subheader("🏆 Classificação Liga Portugal")
+    data_standings = get_data("competitions/PPL/standings")
+    
+    if 'standings' in data_standings:
+        tabela = data_standings['standings'][0]['table']
+        html_tabela = """
+        <table style="width:100%; border-collapse: collapse; background: white; color: #001e3d; border-radius: 10px; overflow: hidden;">
+            <tr style="background: #001e3d; color: white;">
+                <th style="padding: 12px;">Pos</th><th style="text-align: left;">Clube</th><th>J</th><th>V</th><th>E</th><th>D</th><th>Pts</th>
+            </tr>"""
+        
+        for time in tabela:
+            bg = "#e3f2fd" if time['team']['id'] == PORTO_ID else "white"
+            html_tabela += f"""
+            <tr style="background-color: {bg}; border-bottom: 1px solid #eee;">
+                <td style="padding: 10px; text-align: center;">{time['position']}</td>
+                <td style="text-align: left;"><img src="{time['team']['crest']}" width="20"> {time['team']['shortName']}</td>
+                <td style="text-align: center;">{time['playedGames']}</td>
+                <td style="text-align: center;">{time['won']}</td>
+                <td style="text-align: center;">{time['draw']}</td>
+                <td style="text-align: center;">{time['lost']}</td>
+                <td style="text-align: center; font-weight: bold;">{time['points']}</td>
+            </tr>"""
+        st.markdown(html_tabela + "</table>", unsafe_allow_html=True)
+
+# --- 2. ABA: RESULTADOS (AGORA 'ELIF') ---
+elif aba == "Resultados":
+    st.title("⚽ Resultados e Marcadores")
+    
+    historico_marcadores = {
+        "2026-03-15": "Samu Omorodion, Pepê, Galeno",
+        "2026-03-08": "Samu Omorodion, Fábio Vieira",
+        "2026-02-27": "Samu Omorodion (2), Nico González",
+        "2026-02-22": "Galeno",
+        "2026-02-15": "Pepê",
+        "2026-02-09": "Samu Omorodion",
+        "2026-02-02": "Fábio Vieira",
+        "2026-01-26": "Samu Omorodion, Pepê, Nico González"
+    }
+
+    data_res = get_data(f"teams/{PORTO_ID}/matches?status=FINISHED")
+    matches = data_res.get('matches', [])
+
+    for m in reversed(matches[-15:]):
+        dt = m['utcDate'][:10]
+        g_casa, g_fora = m['score']['fullTime']['home'], m['score']['fullTime']['away']
+        
+        if m['homeTeam']['id'] == PORTO_ID:
+            cor = "#28a745" if g_casa > g_fora else ("#dc3545" if g_casa < g_fora else "#ffffff")
+        else:
+            cor = "#28a745" if g_fora > g_casa else ("#dc3545" if g_fora < g_casa else "#ffffff")
+        
+        st.markdown(f"""
+        <div class="jogo-card" style="border-left: 8px solid {cor}; background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; color: #001e3d;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: gray;">
+                <span>Liga Portugal 🇵🇹</span> <span>{dt}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0;">
+                <div style="width: 35%; text-align: right; font-weight: bold;">{m['homeTeam']['shortName']} <img src="{m['homeTeam']['crest']}" width="25"></div>
+                <div style="background: {cor}; color: {'#001e3d' if cor=='#ffffff' else 'white'}; padding: 5px 15px; border-radius: 8px; font-weight: bold; border: 1px solid #ddd;">{g_casa} - {g_fora}</div>
+                <div style="width: 35%; text-align: left; font-weight: bold;"><img src="{m['awayTeam']['crest']}" width="25"> {m['awayTeam']['shortName']}</div>
+            </div>
+            <div style="text-align: center; font-size: 0.85em; color: #555; font-style: italic;">
+                ⚽ {historico_marcadores.get(dt, "Marcadores não registados")}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+# --- CONTINUA COM PLANTEL E CALENDÁRIO USANDO 'ELIF' ---
 
     # (Aqui podes colar o código da Tabela da Liga que te enviei antes)
 
