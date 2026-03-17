@@ -30,6 +30,7 @@ def get_data(endpoint):
 aba = st.sidebar.radio("Ir para:", ["Resultados", "Plantel", "Calendário"])
 
 # --- ABA NOVA: ESTATÍSTICAS E TABELA ---
+
 elif aba == "Estatísticas":
     st.title("📊 Performance & Classificação")
 
