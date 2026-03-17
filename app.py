@@ -68,11 +68,14 @@ if aba == "Estatísticas":
         for time in tabela:
             # Destaca o FC Porto (ID 503)
             bg = "#e3f2fd" if time['team']['id'] == PORTO_ID else "white"
+            
+            # ADICIONA CADA LINHA À VARIÁVEL
             html_tabela += f"""
             <tr style="background: {bg}; border-bottom: 1px solid #eee;">
                 <td style="padding: 10px; text-align: center; font-weight: bold;">{time['position']}</td>
                 <td style="padding: 10px; text-align: left;">
-                    <img src="{time['team']['crest']}" width="20" style="vertical-align: middle;"> {time['team']['shortName']}
+                    <img src="{time['team']['crest']}" width="20" style="vertical-align: middle; margin-right: 8px;">
+                    {time['team']['shortName']}
                 </td>
                 <td style="text-align: center;">{time['playedGames']}</td>
                 <td style="text-align: center;">{time['won']}</td>
@@ -81,8 +84,11 @@ if aba == "Estatísticas":
                 <td style="text-align: center; font-weight: bold;">{time['points']}</td>
             </tr>
             """
+
+        # FORA DO FOR: Fecha a tabela e desenha
         st.markdown(html_tabela + "</table>", unsafe_allow_html=True)
 
+        
 # --- 2. ABA: RESULTADOS (AGORA 'ELIF') ---
 elif aba == "Resultados":
     st.title("⚽ Resultados e Marcadores")
