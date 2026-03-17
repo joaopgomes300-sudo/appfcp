@@ -92,12 +92,13 @@ if aba == "Estatísticas":
 # --- ABA: RESULTADOS (Cores por Resultado + Logos + Competições) ---
 elif aba == "Resultados":
     st.title("⚽ Resultados")
-    
-    # 1. API
+    from datetime import datetime
+
+    # 1. Puxar dados da API
     res_data = get_data(f"teams/{PORTO_ID}/matches?status=FINISHED")
     matches_api = res_data.get('matches', [])
 
-    # 2. Jogos Extras (Europa/Taça) - Garante que a data tem o mesmo formato
+    # 2. Teus jogos manuais (Europa e Taça)
     jogos_extra = [
         {
             "utcDate": "2026-03-04",
@@ -115,16 +116,23 @@ elif aba == "Resultados":
         }
     ]
 
-    # 3. Juntar e ORDENAR DE FORMA INFALÍVEL
+    # 3. Juntar as listas
     todos_jogos = matches_api + jogos_extra
-    
-    # Esta linha limpa qualquer lixo da data (T, Z, horas) e ordena pelo Ano-Mês-Dia
-    todos_jogos.sort(key=lambda x: x['utcDate'][:10], reverse=True)
+
+    # 4. ORDENAÇÃO INFALÍVEL (Converte texto em Data Real)
+    def converter_data(jogo):
+        # Pega nos primeiros 10 caracteres (AAAA-MM-DD) e transforma em objeto de data
+        return datetime.strptime(jogo['utcDate'][:10], '%Y-%m-%d')
+
+    # Ordena usando a função de conversão
+    todos_jogos.sort(key=converter_data, reverse=True)
 
     if todos_jogos:
+        # Mostra os últimos 15
         for m in todos_jogos[:15]:
-            # Criamos uma variável de data limpa para exibição e para a lógica
-            data_final = m['utcDate'][:10]
+            # Formata a data para ficar bonita: DD/MM/AAAA
+            data_obj = converter_data(m)
+            data_exibicao = data_obj.strftime('%d/%m/%Y')
             
             comp_nome = m['competition']['name']
             g_h = m['score']['fullTime']['home']
@@ -139,17 +147,17 @@ elif aba == "Resultados":
             st.markdown(f"""
             <div style="border-left: 8px solid {cor}; background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; color: #001e3d; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">
                 <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #666; margin-bottom: 5px; font-weight: bold;">
-                    <span>🏆 {comp_nome}</span> <span>📅 {data_final}</span>
+                    <span>🏆 {comp_nome}</span> <span>📅 {data_exibicao}</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div style="width: 38%; text-align: right; font-weight: bold;">
-                        {m['homeTeam']['shortName']} <img src="{m['homeTeam']['crest']}" width="25" style="vertical-align: middle;">
+                        {m['homeTeam']['shortName']} <img src="{m['homeTeam']['crest']}" width="25">
                     </div>
-                    <div style="background: {cor}; color: {'white' if cor != '#ffffff' else '#001e3d'}; padding: 5px 15px; border-radius: 8px; font-weight: bold; min-width: 50px; text-align: center;">
+                    <div style="background: {cor}; color: {'white' if cor != '#ffffff' else '#001e3d'}; padding: 5px 15px; border-radius: 8px; font-weight: bold; min-width: 50px; text-align: center; border: 1px solid #ddd;">
                         {g_h} - {g_a}
                     </div>
                     <div style="width: 38%; text-align: left; font-weight: bold;">
-                        <img src="{m['awayTeam']['crest']}" width="25" style="vertical-align: middle;"> {m['awayTeam']['shortName']}
+                        <img src="{m['awayTeam']['crest']}" width="25"> {m['awayTeam']['shortName']}
                     </div>
                 </div>
             </div>
