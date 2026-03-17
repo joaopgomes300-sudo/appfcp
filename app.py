@@ -29,45 +29,72 @@ def get_data(endpoint):
 
 aba = st.sidebar.radio("Ir para:", ["Resultados", "Plantel", "Calendário"])
 
-# --- ABA: RESULTADOS (Corrigido para 'if') ---
+# --- ABA: RESULTADOS (Cores por Resultado + Logos + Competições) ---
 if aba == "Resultados":
-    st.title("⚽ Match Results")    
+    st.title("⚽ Resultados Recentes")
+    
+    # Busca resultados terminados
     data = get_data(f"teams/{PORTO_ID}/matches?status=FINISHED")
     matches = data.get('matches', [])
     
-    if not matches:
-        st.warning("Não foram encontrados resultados recentes.")
-    else:
+    if matches:
+        # Dicionário de tradução de competições
         comps = {
             "PPL": "Liga Portugal 🇵🇹",
             "EL": "Europa League 🇪🇺",
             "TP": "Taça de Portugal 🏆",
-            "TL": "Taça da Liga 🏆"
+            "TL": "Taça da Liga 🏆",
+            "CLI": "Champions League 🇪🇺"
         }
 
-        for m in reversed(matches):
+        for m in reversed(matches[-15:]):
             comp_nome = comps.get(m['competition']['code'], m['competition']['name'])
             data_jogo = m['utcDate'][:10]
-            casa = m['homeTeam']['shortName']
-            fora = m['awayTeam']['shortName']
+            
+            # Dados das equipas e golos
+            casa_id = m['homeTeam']['id']
+            casa_nome = m['homeTeam']['shortName']
+            fora_nome = m['awayTeam']['shortName']
             golo_casa = m['score']['fullTime']['home']
             golo_fora = m['score']['fullTime']['away']
+
+            # --- LÓGICA DE CORES ---
+            # Se o Porto (PORTO_ID) é a casa
+            if casa_id == PORTO_ID:
+                if golo_casa > golo_fora: cor_bg = "#28a745"  # Vitória Verde
+                elif golo_casa < golo_fora: cor_bg = "#dc3545" # Derrota Vermelho
+                else: cor_bg = "#ffffff"; cor_txt = "#001e3d"  # Empate Branco
+            # Se o Porto é o visitante
+            else:
+                if golo_fora > golo_casa: cor_bg = "#28a745"  # Vitória Verde
+                elif golo_fora < golo_casa: cor_bg = "#dc3545" # Derrota Vermelho
+                else: cor_bg = "#ffffff"; cor_txt = "#001e3d"  # Empate Branco
             
-            cor_resultado = "#ffd700" if (m['homeTeam']['id'] == PORTO_ID and golo_casa > golo_fora) or \
-                                         (m['awayTeam']['id'] == PORTO_ID and golo_fora > golo_casa) else "#fff"
+            # Ajuste de cor de texto para o empate (fundo branco precisa de texto escuro)
+            cor_txt = "#ffffff" if cor_bg != "#ffffff" else "#001e3d"
 
             st.markdown(f"""
-            <div style="border: 1px solid #ccc; border-radius: 10px; padding: 10px; margin-bottom: 10px;">
-                <small style="color: gray;">{comp_nome} • {data_jogo}</small><br>
-                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 1.2em;">
-                    <span style="width: 40%; text-align: right;">{casa}</span>
-                    <span style="background: #002d5c; color: {cor_resultado}; padding: 5px 15px; border-radius: 5px; font-weight: bold;">
+            <div class="jogo-card" style="border-left: 8px solid {cor_bg};">
+                <div style="font-size: 0.8em; color: #666; margin-bottom: 5px; display: flex; justify-content: space-between;">
+                    <span>{comp_nome}</span> <span>{data_jogo}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="width: 35%; text-align: right; color: #001e3d;">
+                        <span style="font-weight: bold;">{casa_nome}</span>
+                        <img src="{m['homeTeam']['crest']}" width="25" style="margin-left: 10px;">
+                    </div>
+                    <div style="background: {cor_bg}; color: {cor_txt}; padding: 5px 15px; border-radius: 8px; font-size: 1.2em; font-weight: bold; min-width: 70px; text-align: center; border: 1px solid #ccc;">
                         {golo_casa} - {golo_fora}
-                    </span>
-                    <span style="width: 40%; text-align: left;">{fora}</span>
+                    </div>
+                    <div style="width: 35%; text-align: left; color: #001e3d;">
+                        <img src="{m['awayTeam']['crest']}" width="25" style="margin-right: 10px;">
+                        <span style="font-weight: bold;">{fora_nome}</span>
+                    </div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
+    else:
+        st.info("Nenhum resultado encontrado.")
 
 # --- ABA: PLANTEL (Dividido por Posições) ---
 elif aba == "Plantel":
