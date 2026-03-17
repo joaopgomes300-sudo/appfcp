@@ -206,9 +206,9 @@ elif aba == "Resultados":
         {"dt": "29/01/26", "cp": "UEFA Europa League 🇪🇺", "cs": "Porto", "lc": "https://tmssl.akamaized.net/images/wappen/head/720.png", "fr": "Rangers", "lf": "https://tmssl.akamaized.net/images/wappen/head/124.png", "res": "3 - 1", "cor": "#28a745"}
     ]
 
-for j in jogos:
-        # Criamos uma linha ÚNICA de HTML. Sem espaços no início, sem quebras.
-        # Isto impede o Streamlit de criar aquela caixa preta de código.
-        html = f"<div style='background-color:white;border-radius:10px;padding:15px;margin-bottom:10px;border-left:8px solid {j['cor']};box-shadow:2px 2px 5px rgba(0,0,0,0.1);color:#001e3d;'><div style='display:flex;justify-content:space-between;font-size:11px;color:gray;margin-bottom:5px;'><b>{j['cp']}</b><span>{j['dt']}</span></div><div style='display:flex;justify-content:space-between;align-items:center;'><div style='width:40%;text-align:right;font-weight:bold;'>{j['cs']} <img src='{j['lc']}' width='25' style='vertical-align:middle;'></div><div style='background-color:{j['cor']};color:white;padding:4px 10px;border-radius:5px;font-weight:bold;'>{j['res']}</div><div style='width:40%;text-align:left;font-weight:bold;'><img src='{j['lf']}' width='25' style='vertical-align:middle;'> {j['fr']}</div></div></div>"
+for j in ultimos_jogos:
+        # Colocamos tudo numa string sem quebras de linha para o Streamlit não pensar que é código
+        card = f"<div style='background-color:white; border-radius:12px; padding:15px; margin-bottom:10px; border-left:8px solid {j['cor']}; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color:#001e3d;'><div style='display:flex; justify-content:space-between; font-size:11px; color:gray; margin-bottom:5px;'><b>{j['cp']}</b><span>{j['dt']}</span></div><div style='display:flex; justify-content:space-between; align-items:center;'><div style='width:40%; text-align:right; font-weight:bold;'>{j['cs']} <img src='{j['lc']}' width='25' style='vertical-align:middle;'></div><div style='background-color:{j['cor']}; color:white; padding:4px 10px; border-radius:5px; font-weight:bold;'>{j['res']}</div><div style='width:40%; text-align:left; font-weight:bold;'><img src='{j['lf']}' width='25' style='vertical-align:middle;'> {j['fr']}</div></div></div>"
         
-        st.write(html, unsafe_allow_html=True)
+        # O unsafe_allow_html=True é que faz a magia
+        st.write(card, unsafe_allow_html=True)
