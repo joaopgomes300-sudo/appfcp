@@ -141,33 +141,57 @@ elif aba == "Plantel":
     html += "</table>"
     st.markdown(html, unsafe_allow_html=True)
 
-# --- ABA: CALENDÁRIO ---
+# --- ABA: CALENDÁRIO (Ordenado e com Todas as Provas) ---
 elif aba == "Calendário":
-    st.title("📅 Upcoming Matches")
+    st.title("📅 Próximos Jogos")
+    
     data = get_data(f"teams/{PORTO_ID}/matches?status=SCHEDULED")
     matches = data.get('matches', [])
 
-    if not any(m['competition']['name'] == "UEFA Europa League" for m in matches):
-        matches.append({
+    # INJEÇÃO MANUAL (Para garantir que Europa e Taça aparecem se a API falhar)
+    jogos_extra = [
+        {
             "utcDate": "2026-03-19T20:00:00Z",
-            "competition": {"name": "UEFA Europa League", "code": "EL"},
-            "homeTeam": {"shortName": "FC Porto"},
-            "awayTeam": {"shortName": "VfB Stuttgart"},
-            "status": "SCHEDULED"
-        })
+            "competition": {"name": "Europa League 🇪🇺", "code": "EL"},
+            "homeTeam": {"shortName": "FC Porto", "crest": "https://crests.football-data.org/503.png"},
+            "awayTeam": {"shortName": "VfB Stuttgart", "crest": "https://crests.football-data.org/10.png"}
+        },
+        {
+            "utcDate": "2026-04-05T18:00:00Z",
+            "competition": {"name": "Taça de Portugal 🏆", "code": "TP"},
+            "homeTeam": {"shortName": "Benfica", "crest": "https://crests.football-data.org/1903.png"},
+            "awayTeam": {"shortName": "FC Porto", "crest": "https://crests.football-data.org/503.png"}
+        }
+    ]
+    
+    # Adiciona os extras se eles ainda não estiverem na lista
+    for extra in jogos_extra:
+        if not any(extra['utcDate'][:10] in m['utcDate'] for m in matches):
+            matches.append(extra)
 
-    for m in matches:
+    # ORDENAR POR DATA (Importante para não aparecerem baralhados)
+    matches = sorted(matches, key=lambda x: x['utcDate'])
+
+    for m in matches[:10]:
+        dt = datetime.strptime(m['utcDate'], "%Y-%m-%dT%H:%M:%SZ")
         comp = m['competition']['name']
         if "League" in comp: comp = "Europa League 🇪🇺"
         elif "Portugal" in comp: comp = "Liga Portugal 🇵🇹"
-        
-        data_f = m['utcDate'][:10]
-        hora_f = m['utcDate'][11:16]
-        
+
         st.markdown(f"""
-        <div style="background-color: #f9f9f9; padding: 15px; border-radius: 10px; border-left: 5px solid #002d5c; margin-bottom: 10px;">
-            <b style="color: #002d5c;">{comp}</b><br>
-            <span style="font-size: 1.1em; color: black;">{m['homeTeam']['shortName']} vs {m['awayTeam']['shortName']}</span><br>
-            <small style="color: black;">📅 {data_f} às {hora_f} (UTC)</small>
+        <div class="jogo-card" style="border-left: 5px solid #ffd700;">
+            <div style="font-size: 0.8em; color: #666; margin-bottom: 8px;">{comp}</div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="width: 40%; text-align: right;">
+                    {m['homeTeam']['shortName']} <img src="{m['homeTeam']['crest']}" width="20">
+                </div>
+                <div style="font-weight: bold; color: #001e3d;">{dt.strftime('%H:%M')}</div>
+                <div style="width: 40%; text-align: left;">
+                    <img src="{m['awayTeam']['crest']}" width="20"> {m['awayTeam']['shortName']}
+                </div>
+            </div>
+            <div style="text-align: center; font-size: 0.7em; color: #999; margin-top: 5px;">
+                {dt.strftime('%d de %B, %Y')}
+            </div>
         </div>
         """, unsafe_allow_html=True)
