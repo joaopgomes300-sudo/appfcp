@@ -90,49 +90,47 @@ if aba == "Estatísticas":
 
         
 # --- ABA: RESULTADOS (Cores por Resultado + Logos + Competições) ---
-if aba == "Resultados":
-    st.title("⚽ Resultados e Marcadores")
+elif aba == "Resultados":
+    st.title("⚽ Resultados")
     
-    data = get_data(f"teams/{PORTO_ID}/matches?status=FINISHED")
-    matches = data.get('matches', [])
+    # 1. Chamada à API sem filtros de liga para trazer Europa e Taças
+    res_data = get_data(f"teams/{PORTO_ID}/matches?status=FINISHED")
+    matches = res_data.get('matches', [])
 
-    # Dicionário de Marcadores (Como a API não dá, podes atualizar aqui os nomes)
-    marcadores_db = {
-        "2024-03-08": "Galeno (2), Nico González", # Exemplo
-        "2026-03-15": "Samu Omorodion, Pepê",
-        "2026-03-19": "Samu Omorodion (3)"
-    }
-
-    for m in reversed(matches[-15:]):
-        comp = m['competition']['name'].replace("UEFA Europa League", "Europa League 🇪🇺").replace("Primeira Liga", "Liga Portugal 🇵🇹")
-        data_f = m['utcDate'][:10]
-        g_casa = m['score']['fullTime']['home']
-        g_fora = m['score']['fullTime']['away']
-        
-        # Lógica de Cores (Verde, Vermelho, Branco)
-        if m['homeTeam']['id'] == PORTO_ID:
-            cor = "#28a745" if g_casa > g_fora else ("#dc3545" if g_casa < g_fora else "#ffffff")
-        else:
-            cor = "#28a745" if g_fora > g_casa else ("#dc3545" if g_fora < g_casa else "#ffffff")
-        
-        txt_cor = "#001e3d" if cor == "#ffffff" else "white"
-
-        st.markdown(f"""
-        <div class="jogo-card" style="border-left: 8px solid {cor};">
-            <div style="display: flex; justify-content: space-between; font-size: 0.7em; color: gray;">
-                <span>{comp}</span> <span>{data_f}</span>
+    if matches:
+        # Mostra os últimos 15 jogos (os mais recentes primeiro)
+        for m in reversed(matches[-15:]):
+            dt = m['utcDate'][:10]
+            comp_nome = m['competition']['name']
+            g_h, g_a = m['score']['fullTime']['home'], m['score']['fullTime']['away']
+            
+            # Define a cor da borda baseada no resultado do Porto
+            if m['homeTeam']['id'] == PORTO_ID:
+                cor = "#28a745" if g_h > g_a else ("#dc3545" if g_h < g_a else "#ffffff")
+            else:
+                cor = "#28a745" if g_a > g_h else ("#dc3545" if g_a < g_h else "#ffffff")
+            
+            # Card do Jogo
+            st.markdown(f"""
+            <div style="border-left: 8px solid {cor}; background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; color: #001e3d; box-shadow: 2px 2px 5px rgba(0,0,0,0.05);">
+                <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #666; margin-bottom: 5px;">
+                    <span>🏆 {comp_nome}</span> <span>📅 {dt}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="width: 35%; text-align: right; font-weight: bold;">
+                        {m['homeTeam']['shortName']} <img src="{m['homeTeam']['crest']}" width="25" style="vertical-align: middle; margin-left: 5px;">
+                    </div>
+                    <div style="background: {cor}; color: {'white' if cor != '#ffffff' else '#001e3d'}; padding: 5px 15px; border-radius: 8px; font-weight: bold; border: 1px solid #ddd;">
+                        {g_h} - {g_a}
+                    </div>
+                    <div style="width: 35%; text-align: left; font-weight: bold;">
+                        <img src="{m['awayTeam']['crest']}" width="25" style="vertical-align: middle; margin-right: 5px;"> {m['awayTeam']['shortName']}
+                    </div>
+                </div>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0;">
-                <div style="width: 35%; text-align: right; font-weight: bold;">{m['homeTeam']['shortName']} <img src="{m['homeTeam']['crest']}" width="25"></div>
-                <div style="background: {cor}; color: {txt_cor}; padding: 5px 15px; border-radius: 8px; font-weight: bold; border: 1px solid #ddd;">{g_casa} - {g_fora}</div>
-                <div style="width: 35%; text-align: left; font-weight: bold;"><img src="{m['awayTeam']['crest']}" width="25"> {m['awayTeam']['shortName']}</div>
-            </div>
-            <div style="text-align: center; font-size: 0.8em; color: #555; font-style: italic;">
-                ⚽ {marcadores_db.get(data_f, "Marcadores não registados")}
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
+            """, unsafe_allow_html=True)
+    else:
+        st.warning("Nenhum resultado encontrado recentemente.")
 # --- ABA: PLANTEL (Dividido por Posições) ---
 elif aba == "Plantel":
     st.title("👥 Squad Details")
