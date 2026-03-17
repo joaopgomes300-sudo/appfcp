@@ -76,7 +76,6 @@ elif aba == "Plantel":
         {"num": 10, "nome": "Gabri Veiga", "pos": "Médio", "nac": "Spain", "band": "🇪🇸"},
         {"num": 13, "phrase": "Pablo Rosario", "nome": "Pablo Rosario", "pos": "Médio", "nac": "Netherlands", "band": "🇳🇱"},
         {"num": 22, "nome": "Alan Varela", "pos": "Médio", "nac": "Argentina", "band": "🇦🇷"},
-        {"num": 16, "nome": "Nico González", "pos": "Médio", "nac": "Spain", "band": "🇪🇸"},
         {"num": 31, "nome": "Otávio", "pos": "Médio", "nac": "Brazil", "band": "🇧🇷"},
         {"num": 42, "nome": "Seko Fofana", "pos": "Médio", "nac": "Ivory Coast", "band": "🇨🇮"},
         {"num": 86, "nome": "Rodrigo Mora", "pos": "Médio", "nac": "Portugal", "band": "🇵🇹"},
