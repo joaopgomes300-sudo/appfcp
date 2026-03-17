@@ -218,37 +218,32 @@ elif aba == "Estatísticas":
     st.markdown('<p class="main-title">📊 Classificação em Tempo Real</p>', unsafe_allow_html=True)
 
     try:
-        # 1. PEGAR OS DADOS (Scraping automático da ESPN)
+        # Este link da ESPN é o que permite a atualização automática
         url = "https://www.espn.com.pt/futebol/classificacao/_/liga/por.1"
-        tabelas = pd.read_html(url)
+        tabelas = pd.read_html(url) # O pandas lê o site sozinho
         
-        # Juntamos nomes das equipas com os números
+        # Junta os nomes das equipas com os pontos
         df_nomes = tabelas[0]
         df_stats = tabelas[1]
         df_liga = pd.concat([df_nomes, df_stats], axis=1)
 
-        # 2. LIMPAR A TABELA
-        # Vamos manter apenas o essencial: Nome, Jogos, Vitórias, Empates, Derrotas, Pontos
+        # Limpa para mostrar só o que interessa
         df_liga = df_liga.iloc[:, [0, 1, 2, 3, 4, 7]] 
         df_liga.columns = ['Equipa', 'J', 'V', 'E', 'D', 'PTS']
 
-        # 3. MOSTRAR A TABELA NO ESTILO DO STREAMLIT
-        # O 'style.apply' serve para destacar o Porto automaticamente
+        # Função para pintar a linha do Porto de Azul claro
         def destacar_porto(val):
             color = '#e6f0ff' if 'Porto' in str(val) else ''
             return f'background-color: {color}'
 
+        # Desenha a tabela automática no teu site
         st.dataframe(
             df_liga.style.applymap(destacar_porto, subset=['Equipa']),
             use_container_width=True,
             hide_index=True
         )
-        st.caption("✅ Dados sincronizados com a Liga Portugal via ESPN")
+        st.caption("✅ Classificação atualizada automaticamente via ESPN")
 
     except Exception as e:
-        st.error("⚠️ Não foi possível carregar os dados automáticos.")
-        st.info("A mostrar dados de reserva...")
-        # Se o site falhar, ele mostra estes:
-        st.table({"Equipa": ["Sporting CP", "FC Porto", "SL Benfica"], "PTS": [63, 61, 59]})
-
-        st.write(card, unsafe_allow_html=True) # <-- Vê se este parêntese está lá!
+        # Se o site da ESPN estiver em baixo, ele avisa-te aqui
+        st.error("Erro ao ligar ao servidor de resultados.")
