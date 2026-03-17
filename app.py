@@ -30,7 +30,7 @@ def get_data(endpoint):
 aba = st.sidebar.radio("Ir para:", ["Resultados", "Plantel", "Calendário"])
 
 # --- ABA: RESULTADOS (Incluindo Taças e Europa) ---
-elif aba == "Resultados":
+    elif aba == "Resultados":
     st.title("⚽ Match Results")
     
     # Vamos buscar os jogos terminados (FINISHED)
