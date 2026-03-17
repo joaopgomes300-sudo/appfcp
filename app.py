@@ -89,65 +89,6 @@ if aba == "Estatísticas":
         st.markdown(html_tabela + "</table>", unsafe_allow_html=True)
 
         
-elif aba == "Resultados":
-    st.title("⚽ Resultados e Marcadores")
-    
-    # Marcadores manuais
-    historico_marcadores = {
-        "2026-03-15": "Samu Omorodion, Pepê, Galeno",
-        "2026-03-08": "Samu Omorodion, Fábio Vieira",
-        "2026-02-27": "Samu Omorodion (2), Nico González",
-        "2026-02-22": "Galeno",
-        "2026-02-15": "Pepê",
-        "2026-02-09": "Samu Omorodion",
-        "2026-02-02": "Fábio Vieira"
-    }
-
-    res_data = get_data(f"teams/{PORTO_ID}/matches?status=FINISHED")
-    matches = res_data.get('matches', [])
-
-    if matches:
-        # Mostra apenas os últimos 10 jogos para não ficar gigante
-        for m in reversed(matches[-10:]):
-            dt = m['utcDate'][:10]
-            g_h, g_a = m['score']['fullTime']['home'], m['score']['fullTime']['away']
-            
-            # Cor do indicador lateral (Vitória/Empate/Derrota)
-            if m['homeTeam']['id'] == PORTO_ID:
-                cor = "#28a745" if g_h > g_a else ("#dc3545" if g_h < g_a else "#ffffff")
-            else:
-                cor = "#28a745" if g_a > g_h else ("#dc3545" if g_a < g_h else "#ffffff")
-            
-            st.markdown(f"""
-            <div style="border-left: 8px solid {cor}; background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; color: #001e3d;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: gray;">
-                    <span>{m['competition']['name']}</span> <span>{dt}</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0;">
-                    <div style="width: 35%; text-align: right; font-weight: bold;">{m['homeTeam']['shortName']} <img src="{m['homeTeam']['crest']}" width="25"></div>
-                    <div style="background: {cor}; color: {'white' if cor != '#ffffff' else '#001e3d'}; padding: 5px 15px; border-radius: 8px; font-weight: bold;">{g_h} - {g_a}</div>
-                    <div style="width: 35%; text-align: left; font-weight: bold;"><img src="{m['awayTeam']['crest']}" width="25"> {m['awayTeam']['shortName']}</div>
-                </div>
-                <div style="text-align: center; font-size: 0.85em; color: #555;">⚽ {historico_marcadores.get(dt, "Marcadores não registados")}</div>
-            </div>
-            """, unsafe_allow_html=True)
-
-# --- CONTINUA COM PLANTEL E CALENDÁRIO USANDO 'ELIF' ---
-
-    # (Aqui podes colar o código da Tabela da Liga que te enviei antes)
-
-
-
-# --- ABA 3: PLANTEL ---
-elif aba == "Plantel":
-    st.title("👥 Squad Details")
-    # ... (teu código de plantel aqui)
-
-# --- ABA 4: CALENDÁRIO ---
-elif aba == "Calendário":
-    st.title("📅 Próximos Jogos")
-    # ... (teu código de calendário aqui)
-
 # --- ABA: RESULTADOS (Cores por Resultado + Logos + Competições) ---
 if aba == "Resultados":
     st.title("⚽ Resultados e Marcadores")
