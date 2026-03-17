@@ -212,7 +212,7 @@ for j in ultimos_jogos:
         card = f"<div style='background-color:white; border-radius:12px; padding:15px; margin-bottom:10px; border-left:8px solid {j['cor']}; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color:#001e3d;'><div style='display:flex; justify-content:space-between; font-size:11px; color:gray; margin-bottom:5px;'><b>{j['cp']}</b><span>{j['dt']}</span></div><div style='display:flex; justify-content:space-between; align-items:center;'><div style='width:40%; text-align:right; font-weight:bold;'>{j['cs']} <img src='{j['lc']}' width='25' style='vertical-align:middle;'></div><div style='background-color:{j['cor']}; color:white; padding:4px 10px; border-radius:5px; font-weight:bold;'>{j['res']}</div><div style='width:40%; text-align:left; font-weight:bold;'><img src='{j['lf']}' width='25' style='vertical-align:middle;'> {j['fr']}</div></div></div>"
         
         # O unsafe_allow_html=True é que faz a magia
-        st.write(card, unsafe_allow_html=True)
+    st.write(card, unsafe_allow_html=True)
 
 elif aba == "Estatísticas":
     st.markdown('<p class="main-title">📊 Classificação em Tempo Real</p>', unsafe_allow_html=True)
